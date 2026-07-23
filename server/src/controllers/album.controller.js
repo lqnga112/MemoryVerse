@@ -32,6 +32,7 @@ exports.getAlbums = async (req, res) => {
 exports.uploadMemory = async (req, res) => {
   try {
     const { albumId } = req.params;
+    const { title, memoryDate, location } = req.body;
     
     // Kiểm tra file upload
     if (!req.file) {
@@ -44,9 +45,13 @@ exports.uploadMemory = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy album' });
     }
 
-    // Xác định loại file
-    const fileType = req.file.mimetype.startsWith('video') ? 'video' : 'image';
-    
+    // Xác định loại file từ client gửi lên, nếu không có tự động đoán bằng mimetype
+    let fileType = req.body.fileType;
+    if (!fileType) {
+      if (req.file.mimetype.startsWith('video')) fileType = 'video';
+      else if (req.file.mimetype.startsWith('audio')) fileType = 'audio';
+      else fileType = 'image';
+    }
     // Tạo link truy cập file tĩnh
     const fileUrl = `/uploads/${req.file.filename}`;
 
@@ -55,7 +60,9 @@ exports.uploadMemory = async (req, res) => {
       ownerId: req.user.userId,
       fileUrl,
       fileType,
-      title: req.file.originalname
+      title: title || req.file.originalname,
+      memoryDate: memoryDate || Date.now(),
+      location: location || ''
     });
 
     await memory.save();
@@ -146,11 +153,11 @@ exports.deleteAlbum = async (req, res) => {
 exports.updateMemory = async (req, res) => {
   try {
     const { memoryId } = req.params;
-    const { title } = req.body;
+    const { title, memoryDate, location } = req.body;
     
     const memory = await Memory.findOneAndUpdate(
       { _id: memoryId, ownerId: req.user.userId },
-      { title },
+      { title, memoryDate, location },
       { new: true }
     );
     

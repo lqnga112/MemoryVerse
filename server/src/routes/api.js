@@ -24,7 +24,10 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB cho video/audio
+});
 
 // --- Album & Memory Routes ---
 router.post('/albums', authMiddleware, albumController.createAlbum);
@@ -42,5 +45,16 @@ router.delete('/memories/:memoryId', authMiddleware, albumController.deleteMemor
 
 // --- AI Routes ---
 router.post('/ai/ocr/:memoryId', authMiddleware, aiController.extractTextFromImage);
+router.post('/ai/stt/:memoryId', authMiddleware, aiController.extractTextFromAudio);
+router.post('/ai/story/:albumId', authMiddleware, aiController.generateStory);
+router.post('/ai/chat/:albumId', authMiddleware, aiController.chatWithAI);
+
+const userController = require('../controllers/user.controller');
+
+// --- User Profile Routes ---
+router.get('/users/profile', authMiddleware, userController.getProfile);
+router.put('/users/profile', authMiddleware, userController.updateProfile);
+router.post('/users/avatar', authMiddleware, upload.single('avatar'), userController.uploadAvatar);
+router.put('/users/password', authMiddleware, userController.changePassword);
 
 module.exports = router;

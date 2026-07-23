@@ -9,6 +9,7 @@ const AlbumDetail = () => {
   const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState('timeline'); // 'timeline', 'story', 'chat'
 
   // States cho Lightbox (Trình xem ảnh/sửa xóa ảnh)
   const [selectedMemory, setSelectedMemory] = useState(null);
@@ -19,6 +20,15 @@ const AlbumDetail = () => {
   const [isListening, setIsListening] = useState(false);
   const [isOcrRunning, setIsOcrRunning] = useState(false);
   const [ocrProgress, setOcrProgress] = useState(0);
+  const [isSttRunning, setIsSttRunning] = useState(false);
+  const [uploadType, setUploadType] = useState('image');
+
+  // AI Story & Chat States
+  const [story, setStory] = useState('');
+  const [generatingStory, setGeneratingStory] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatting, setIsChatting] = useState(false);
 
   const recognitionRef = useRef(null);
 
@@ -78,6 +88,7 @@ const AlbumDetail = () => {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('fileType', uploadType);
 
     setUploading(true);
     try {
@@ -109,11 +120,15 @@ const AlbumDetail = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(`http://localhost:5000/api/memories/${selectedMemory._id}`, 
-        { title: memoryTitle },
+        { 
+          title: memoryTitle,
+          memoryDate: selectedMemory.memoryDate,
+          location: selectedMemory.location
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle } : m));
+      setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle, memoryDate: selectedMemory.memoryDate, location: selectedMemory.location } : m));
       setSelectedMemory(null);
       if (isListening) recognitionRef.current.stop();
     } catch (err) {
@@ -150,11 +165,9 @@ const AlbumDetail = () => {
   };
 
   const runOCR = async () => {
-    if (!selectedMemory || selectedMemory.fileType !== 'image') return;
+    if (!selectedMemory || (selectedMemory.fileType !== 'image' && selectedMemory.fileType !== 'letter')) return;
     
     setIsOcrRunning(true);
-    setOcrProgress(0);
-    
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(`http://localhost:5000/api/ai/ocr/${selectedMemory._id}`, {}, {
@@ -168,6 +181,63 @@ const AlbumDetail = () => {
       alert('Không thể đọc được chữ từ ảnh này. Vui lòng thử lại.');
     } finally {
       setIsOcrRunning(false);
+    }
+  };
+
+  const runSTT = async () => {
+    if (!selectedMemory || selectedMemory.fileType !== 'audio') return;
+    
+    setIsSttRunning(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`http://localhost:5000/api/ai/stt/${selectedMemory._id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const extractedText = res.data.text;
+      setMemoryTitle(prev => prev + (prev ? '\n' : '') + extractedText.trim());
+    } catch (error) {
+      console.error(error);
+      alert('Không thể bóc băng ghi âm này. Vui lòng thử lại.');
+    } finally {
+      setIsSttRunning(false);
+    }
+  };
+
+  const handleGenerateStory = async () => {
+    setGeneratingStory(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`http://localhost:5000/api/ai/story/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setStory(res.data.story);
+    } catch (error) {
+      alert('Lỗi khi tạo hồi ký: ' + (error.response?.data?.message || 'Có lỗi xảy ra'));
+    } finally {
+      setGeneratingStory(false);
+    }
+  };
+
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    
+    const userMsg = { role: 'user', content: chatInput };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatInput('');
+    setIsChatting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`http://localhost:5000/api/ai/chat/${id}`, { question: userMsg.content }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setChatMessages(prev => [...prev, { role: 'ai', content: res.data.answer }]);
+    } catch (error) {
+      setChatMessages(prev => [...prev, { role: 'ai', content: 'Lỗi: Không thể kết nối với hệ thống bộ nhớ AI.' }]);
+    } finally {
+      setIsChatting(false);
     }
   };
 
@@ -185,55 +255,192 @@ const AlbumDetail = () => {
         </button>
       </aside>
 
-      <main className="glass-card main-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <main className="glass-card main-content" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
           <div>
-            <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>{album?.title}</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>{album?.description || 'Chưa có mô tả'}</p>
+            <h2 style={{ fontSize: '36px', fontWeight: '900', marginBottom: '8px', color: 'var(--primary-brown)' }}>{album?.title}</h2>
+            <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>{album?.description || 'Hành trình chưa có mô tả'}</p>
           </div>
           
-          <div style={{ position: 'relative' }}>
-            <input 
-              type="file" 
-              accept="image/*,video/*"
-              onChange={handleFileUpload} 
-              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, cursor: 'pointer', width: '100%' }}
-              disabled={uploading}
-            />
-            <button className="btn-primary" style={{ background: '#3b82f6', pointerEvents: 'none' }}>
-              {uploading ? '⏳ Đang tải...' : '➕ Tải Kỷ Niệm Lên'}
-            </button>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <select 
+              value={uploadType} 
+              onChange={(e) => setUploadType(e.target.value)}
+              className="form-input"
+              style={{ width: '130px', padding: '8px', marginBottom: 0 }}
+            >
+              <option value="image">🖼️ Ảnh</option>
+              <option value="video">🎥 Video</option>
+              <option value="audio">🎵 Ghi âm</option>
+              <option value="letter">📝 Thư tay</option>
+            </select>
+            <div style={{ position: 'relative' }}>
+              <input 
+                type="file" 
+                accept={uploadType === 'video' ? 'video/*' : uploadType === 'audio' ? 'audio/*' : 'image/*'}
+                onChange={handleFileUpload} 
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, cursor: 'pointer', width: '100%' }}
+                disabled={uploading}
+              />
+              <button className="btn-primary" style={{ pointerEvents: 'none' }}>
+                {uploading ? '⏳ Đang tải...' : '➕ Thêm Kỷ Niệm'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {memories.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '250px', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '24px' }}>
-            <p style={{ fontSize: '36px', marginBottom: '16px' }}>📸</p>
-            <p style={{ fontWeight: '500', marginBottom: '8px' }}>Album này chưa có ảnh nào.</p>
-            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Bấm "Tải Kỷ Niệm Lên" để thêm ảnh đầu tiên nhé!</p>
-          </div>
-        ) : (
-          <div className="grid-container">
-            {memories.map(memory => (
-              <div 
-                key={memory._id} 
-                onClick={() => openLightbox(memory)}
-                style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '16px', overflow: 'hidden', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}
-              >
-                {memory.fileType === 'video' ? (
-                  <video src={`http://localhost:5000${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
+          <button 
+            onClick={() => setActiveTab('timeline')} 
+            className={`btn-outline ${activeTab === 'timeline' ? 'active' : ''}`}
+            style={{ borderRadius: '20px' }}
+          >
+            ⏳ Dòng Thời Gian
+          </button>
+          <button 
+            onClick={() => setActiveTab('story')} 
+            className={`btn-outline ${activeTab === 'story' ? 'active' : ''}`}
+            style={{ borderRadius: '20px' }}
+          >
+            📖 Cuốn Hồi Ký
+          </button>
+          <button 
+            onClick={() => setActiveTab('chat')} 
+            className={`btn-outline ${activeTab === 'chat' ? 'active' : ''}`}
+            style={{ borderRadius: '20px' }}
+          >
+            💬 Trò Chuyện (AI)
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
+          
+          {activeTab === 'timeline' && (
+            <div style={{ position: 'relative', paddingLeft: '24px' }}>
+              {/* Vertical Line */}
+              <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--light-brown)', opacity: 0.3 }}></div>
+              
+              {memories.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                  <p style={{ fontSize: '36px', marginBottom: '16px' }}>🎞️</p>
+                  <p>Hành trình này chưa có kỷ niệm nào.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                  {memories.map((memory, idx) => (
+                    <div key={memory._id} style={{ display: 'flex', gap: '24px', position: 'relative' }}>
+                      {/* Timeline Dot */}
+                      <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary-brown)', border: '2px solid var(--bg-dark)' }}></div>
+                      
+                      {/* Memory Content */}
+                      <div 
+                        onClick={() => openLightbox(memory)}
+                        style={{ flex: 1, background: '#FFFFFF', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(155, 119, 92, 0.2)', boxShadow: 'var(--shadow-soft)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '16px', alignItems: 'center' }}
+                      >
+                        {/* Thumbnail */}
+                        <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#f5f5f5', flexShrink: 0 }}>
+                          {memory.fileType === 'video' ? (
+                            <video src={`http://localhost:5000${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : memory.fileType === 'audio' ? (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--light-brown)', color: 'white', fontSize: '32px' }}>🎵</div>
+                          ) : (
+                            <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'sepia(0.2)' }} />
+                          )}
+                        </div>
+                        
+                        {/* Details */}
+                        <div>
+                          <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>
+                            {new Date(memory.memoryDate || memory.createdAt).toLocaleDateString('vi-VN')} {memory.location ? `• ${memory.location}` : ''}
+                          </div>
+                          <h4 style={{ fontSize: '18px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                            {memory.title || (memory.fileType === 'audio' ? 'Đoạn ghi âm' : memory.fileType === 'letter' ? 'Thư tay' : 'Kỷ niệm')}
+                          </h4>
+                          {memory.extractedText && (
+                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              "{memory.extractedText}"
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'story' && (
+            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)' }}>
+              {!story ? (
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <p style={{ fontSize: '48px', marginBottom: '16px' }}>📖</p>
+                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '8px' }}>Chưa có hồi ký</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Chức năng AI Storytelling sẽ đọc tất cả các kỷ niệm ở Timeline và xâu chuỗi thành một câu chuyện cuộc đời.</p>
+                  <button onClick={handleGenerateStory} disabled={generatingStory} className="btn-primary">
+                    {generatingStory ? '⏳ Đang viết hồi ký...' : '✨ Viết Hồi Ký (AI)'}
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)' }}>Hồi Ký Cuộc Đời</h3>
+                    <button onClick={handleGenerateStory} disabled={generatingStory} className="btn-primary" style={{ fontSize: '12px', padding: '8px 16px' }}>
+                      {generatingStory ? '⏳ Đang viết lại...' : '✨ Viết lại'}
+                    </button>
+                  </div>
+                  <div style={{ whiteSpace: 'pre-wrap', color: 'var(--text-primary)', lineHeight: '1.8', fontSize: '16px' }}>
+                    {story}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'chat' && (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '500px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', overflow: 'hidden' }}>
+              <div style={{ padding: '16px', borderBottom: '1px solid rgba(168, 139, 119, 0.15)', background: 'var(--bg-dark)' }}>
+                <h3 style={{ fontSize: '18px', color: 'var(--primary-brown)' }}>💬 Trò chuyện với Ký ức</h3>
+                <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Bạn có thể hỏi bất cứ thông tin gì về Hành trình này.</p>
+              </div>
+              
+              <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {chatMessages.length === 0 && (
+                  <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '40px' }}>
+                    <p style={{ fontSize: '32px', marginBottom: '8px' }}>👋</p>
+                    <p>Hãy hỏi tôi một câu hỏi, ví dụ: "Bức ảnh cũ nhất được chụp ở đâu?"</p>
+                  </div>
                 )}
-                {memory.title && (
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '16px 8px 8px 8px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {memory.title}
+                {chatMessages.map((msg, idx) => (
+                  <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '80%', background: msg.role === 'user' ? 'var(--primary-brown)' : '#F5F3F0', color: msg.role === 'user' ? '#FFFFFF' : 'var(--text-primary)', padding: '12px 16px', borderRadius: '16px', borderBottomRightRadius: msg.role === 'user' ? 0 : '16px', borderBottomLeftRadius: msg.role === 'user' ? '16px' : 0 }}>
+                    {msg.content}
+                  </div>
+                ))}
+                {isChatting && (
+                  <div style={{ alignSelf: 'flex-start', background: '#F5F3F0', padding: '12px 16px', borderRadius: '16px', borderBottomLeftRadius: 0, color: 'var(--text-secondary)' }}>
+                    ⏳ AI đang suy nghĩ...
                   </div>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+
+              <form onSubmit={handleChatSubmit} style={{ display: 'flex', padding: '16px', borderTop: '1px solid rgba(168, 139, 119, 0.15)', background: '#FFFFFF', gap: '12px' }}>
+                <input 
+                  type="text" 
+                  value={chatInput} 
+                  onChange={e => setChatInput(e.target.value)} 
+                  placeholder="Nhập câu hỏi của bạn..." 
+                  className="form-input" 
+                  style={{ marginBottom: 0, flex: 1 }} 
+                  disabled={isChatting}
+                />
+                <button type="submit" disabled={isChatting} className="btn-primary" style={{ marginBottom: 0 }}>Gửi</button>
+              </form>
+            </div>
+          )}
+
+        </div>
       </main>
 
       {/* Lightbox / Edit Memory Modal */}
@@ -245,17 +452,35 @@ const AlbumDetail = () => {
             <div style={{ flex: 1, background: '#000', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
               {selectedMemory.fileType === 'video' ? (
                 <video src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%' }} controls autoPlay />
+              ) : selectedMemory.fileType === 'audio' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                  <div style={{ width: '200px', height: '200px', borderRadius: '50%', background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'spin 10s linear infinite' }}>
+                    <span style={{ fontSize: '80px' }}>🎵</span>
+                  </div>
+                  <audio src={`http://localhost:5000${selectedMemory.fileUrl}`} controls autoPlay />
+                  
+                  {/* Nút STT */}
+                  <button 
+                    onClick={runSTT}
+                    disabled={isSttRunning}
+                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
+                  >
+                    {isSttRunning ? `⏳ Đang bóc băng ghi âm...` : '✨ Trích xuất văn bản (Gemini AI)'}
+                  </button>
+                </div>
               ) : (
                 <>
                   <img src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
-                  {/* Nút AI OCR đè lên ảnh */}
-                  <button 
-                    onClick={runOCR}
-                    disabled={isOcrRunning}
-                    style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
-                  >
-                    {isOcrRunning ? `⏳ Đang dùng Gemini quét ảnh...` : '✨ Quét chữ bằng Gemini AI'}
-                  </button>
+                  {/* Nút AI OCR chỉ ưu tiên cho thư tay hoặc ảnh */}
+                  {(selectedMemory.fileType === 'letter' || selectedMemory.fileType === 'image') && (
+                    <button 
+                      onClick={runOCR}
+                      disabled={isOcrRunning}
+                      style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
+                    >
+                      {isOcrRunning ? `⏳ Đang dùng Gemini quét ảnh...` : (selectedMemory.fileType === 'letter' ? '✨ Đọc thư tay (Gemini AI)' : '✨ Quét chữ (Gemini AI)')}
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -274,7 +499,7 @@ const AlbumDetail = () => {
                   <button 
                     type="button" 
                     onClick={toggleListen}
-                    style={{ background: isListening ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)', color: isListening ? '#f87171' : 'white', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.3s' }}
+                    style={{ background: isListening ? 'rgba(239, 68, 68, 0.2)' : 'rgba(155, 119, 92, 0.1)', color: isListening ? '#f87171' : 'var(--primary-brown)', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.3s' }}
                   >
                     {isListening ? '🔴 Đang nghe...' : '🎙️ Nói để gõ'}
                   </button>
@@ -283,15 +508,39 @@ const AlbumDetail = () => {
                   value={memoryTitle}
                   onChange={e => setMemoryTitle(e.target.value)}
                   className="form-input"
-                  style={{ minHeight: '120px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid var(--border-color)' }}
-                  placeholder="Thêm mô tả cho kỷ niệm này..."
+                  style={{ minHeight: '120px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid rgba(155, 119, 92, 0.3)' }}
+                  placeholder="Thêm câu chuyện hoặc mô tả..."
                 />
                 
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Thời gian</label>
+                    <input 
+                      type="date"
+                      className="form-input"
+                      style={{ padding: '10px' }}
+                      value={selectedMemory.memoryDate ? selectedMemory.memoryDate.split('T')[0] : ''}
+                      onChange={(e) => setSelectedMemory({...selectedMemory, memoryDate: e.target.value})}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Địa điểm</label>
+                    <input 
+                      type="text"
+                      className="form-input"
+                      style={{ padding: '10px' }}
+                      placeholder="VD: Hà Nội"
+                      value={selectedMemory.location || ''}
+                      onChange={(e) => setSelectedMemory({...selectedMemory, location: e.target.value})}
+                    />
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                   <button type="submit" disabled={updatingMemory} className="btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
                     {updatingMemory ? '⏳' : 'Lưu lại'}
                   </button>
-                  <button type="button" onClick={handleDeleteMemory} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5' }}>
+                  <button type="button" onClick={handleDeleteMemory} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                     🗑️ Xóa
                   </button>
                 </div>

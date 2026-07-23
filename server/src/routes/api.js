@@ -8,13 +8,34 @@ router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 
 // --- Protected Route Example ---
-router.get('/auth/me', authMiddleware, (req, res) => {
-  res.json({ message: 'Đây là dữ liệu cá nhân', user: req.user });
-});
+router.get('/auth/me', authMiddleware, authController.getUserProfile);
 
-// --- Placeholder for Memory routes (Module 4) ---
-router.get('/memories', authMiddleware, (req, res) => {
-  res.json({ memories: [] });
+const albumController = require('../controllers/album.controller');
+const multer = require('multer');
+const path = require('path');
+
+// Cấu hình lưu trữ file bằng Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Thư mục lưu file
+  },
+  filename: function (req, file, cb) {
+    // Đặt tên file là timestamp + tên gốc để chống trùng lặp
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
 });
+const upload = multer({ storage: storage });
+
+// --- Album & Memory Routes ---
+router.post('/albums', authMiddleware, albumController.createAlbum);
+router.get('/albums', authMiddleware, albumController.getAlbums);
+router.get('/albums/:albumId/memories', authMiddleware, albumController.getMemories);
+router.post('/albums/:albumId/memories', authMiddleware, upload.single('file'), albumController.uploadMemory);
+
+// --- Edit & Delete Routes ---
+router.put('/albums/:albumId', authMiddleware, albumController.updateAlbum);
+router.delete('/albums/:albumId', authMiddleware, albumController.deleteAlbum);
+router.put('/memories/:memoryId', authMiddleware, albumController.updateMemory);
+router.delete('/memories/:memoryId', authMiddleware, albumController.deleteMemory);
 
 module.exports = router;

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-ro
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import AlbumDetail from './pages/AlbumDetail';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -10,19 +11,18 @@ function Home() {
   return (
     <div style={{ maxWidth: '1000px', margin: '60px auto', padding: '0 20px' }}>
       <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <span className="badge">Dự án 1 - Family Memory App MVP</span>
+        <span className="badge">AI Museum of Memories</span>
         <h1 style={{ 
-          fontSize: '36px', 
+          fontSize: '42px', 
           fontWeight: 800, 
           marginTop: '16px',
-          background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
+          color: 'var(--text-primary)',
+          fontFamily: 'var(--font-heading)'
         }}>
-          Hệ thống Lưu giữ & Phân tích Kỷ niệm Gia đình
+          MemoryVerse
         </h1>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>
-          Tải lên ảnh cũ, video, thư tay (AI OCR) & ghi âm (AI Speech-to-Text).
+        <p style={{ color: 'var(--text-secondary)', marginTop: '8px', fontSize: '18px', fontFamily: 'var(--font-hand)' }}>
+          "Every memory deserves to be remembered."
         </p>
       </header>
 
@@ -50,9 +50,9 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/albums/:id" element={<AlbumDetail />} />
         </Route>
 

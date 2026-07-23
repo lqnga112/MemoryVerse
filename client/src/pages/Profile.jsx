@@ -124,11 +124,14 @@ const Profile = () => {
             <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>MemoryVerse</h1>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'flex-start', background: 'rgba(255,255,255,0.1)' }}>
-              🏠 Tổng quan
+            <button className="btn-outline active">
+              🏠 Trang chủ
             </button>
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'flex-start', background: 'transparent' }}>
-              📸 Albums ({albums.length})
+            <button className="btn-outline">
+              🎞️ Hành trình ({albums.length})
+            </button>
+            <button onClick={() => navigate('/settings')} className="btn-outline">
+              ⚙️ Cài đặt tài khoản
             </button>
           </div>
         </div>
@@ -147,18 +150,18 @@ const Profile = () => {
               <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{user?.email}</p>
             </div>
             <img 
-              src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
+              src={user?.avatar_url ? `http://localhost:5000${user.avatar_url}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
               alt="Avatar" 
-              style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)' }} 
+              style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', objectFit: 'cover' }} 
             />
           </div>
         </div>
 
-        {/* Nút Tạo Album */}
+        {/* Nút Tạo Hành trình */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '20px' }}>Danh sách Album</h3>
+          <h3 style={{ fontSize: '24px', fontWeight: 'bold' }}>Các Hành Trình Kỷ Niệm</h3>
           <button onClick={() => { setAlbumTitle(''); setAlbumDesc(''); setShowModal(true); }} className="btn-primary">
-            + Tạo Album Mới
+            + Bắt đầu hành trình mới
           </button>
         </div>
 

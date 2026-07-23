@@ -16,10 +16,23 @@ const memorySchema = new mongoose.Schema({
     required: true
   },
   fileType: {
-    type: String, // 'image' hoặc 'video'
+    type: String, // 'image', 'video', 'audio', 'letter'
+    enum: ['image', 'video', 'audio', 'letter'],
     default: 'image'
   },
   title: {
+    type: String,
+    default: ''
+  },
+  memoryDate: {
+    type: Date,
+    default: Date.now
+  },
+  location: {
+    type: String,
+    default: ''
+  },
+  extractedText: {
     type: String,
     default: ''
   }

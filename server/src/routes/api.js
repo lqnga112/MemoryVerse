@@ -32,10 +32,15 @@ router.get('/albums', authMiddleware, albumController.getAlbums);
 router.get('/albums/:albumId/memories', authMiddleware, albumController.getMemories);
 router.post('/albums/:albumId/memories', authMiddleware, upload.single('file'), albumController.uploadMemory);
 
+const aiController = require('../controllers/ai.controller');
+
 // --- Edit & Delete Routes ---
 router.put('/albums/:albumId', authMiddleware, albumController.updateAlbum);
 router.delete('/albums/:albumId', authMiddleware, albumController.deleteAlbum);
 router.put('/memories/:memoryId', authMiddleware, albumController.updateMemory);
 router.delete('/memories/:memoryId', authMiddleware, albumController.deleteMemory);
+
+// --- AI Routes ---
+router.post('/ai/ocr/:memoryId', authMiddleware, aiController.extractTextFromImage);
 
 module.exports = router;

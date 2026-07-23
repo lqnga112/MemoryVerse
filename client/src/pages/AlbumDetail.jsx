@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -14,9 +14,46 @@ const AlbumDetail = () => {
   const [selectedMemory, setSelectedMemory] = useState(null);
   const [memoryTitle, setMemoryTitle] = useState('');
   const [updatingMemory, setUpdatingMemory] = useState(false);
+  
+  // AI States
+  const [isListening, setIsListening] = useState(false);
+  const [isOcrRunning, setIsOcrRunning] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     fetchMemories();
+    
+    // Khởi tạo Speech Recognition
+    if ('webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'vi-VN';
+
+      recognitionRef.current.onresult = (event) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setMemoryTitle(prev => prev + (prev ? ' ' : '') + finalTranscript);
+        }
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
   }, [id]);
 
   const fetchMemories = async () => {
@@ -63,6 +100,7 @@ const AlbumDetail = () => {
   const openLightbox = (memory) => {
     setSelectedMemory(memory);
     setMemoryTitle(memory.title || '');
+    setIsListening(false);
   };
 
   const handleUpdateMemory = async (e) => {
@@ -75,9 +113,9 @@ const AlbumDetail = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Cập nhật state nội bộ để không phải fetch lại toàn bộ
       setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle } : m));
       setSelectedMemory(null);
+      if (isListening) recognitionRef.current.stop();
     } catch (err) {
       alert('Cập nhật thất bại');
     } finally {
@@ -95,8 +133,41 @@ const AlbumDetail = () => {
       
       setMemories(memories.filter(m => m._id !== selectedMemory._id));
       setSelectedMemory(null);
+      if (isListening) recognitionRef.current.stop();
     } catch (err) {
       alert('Xóa thất bại');
+    }
+  };
+
+  const toggleListen = () => {
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  const runOCR = async () => {
+    if (!selectedMemory || selectedMemory.fileType !== 'image') return;
+    
+    setIsOcrRunning(true);
+    setOcrProgress(0);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`http://localhost:5000/api/ai/ocr/${selectedMemory._id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const extractedText = res.data.text;
+      setMemoryTitle(prev => prev + (prev ? '\\n' : '') + extractedText.trim());
+    } catch (error) {
+      console.error(error);
+      alert('Không thể đọc được chữ từ ảnh này. Vui lòng thử lại.');
+    } finally {
+      setIsOcrRunning(false);
     }
   };
 
@@ -154,7 +225,6 @@ const AlbumDetail = () => {
                 ) : (
                   <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 )}
-                {/* Lớp mờ đen dưới đáy để hiển thị tiêu đề nếu có */}
                 {memory.title && (
                   <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '16px 8px 8px 8px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {memory.title}
@@ -169,37 +239,57 @@ const AlbumDetail = () => {
       {/* Lightbox / Edit Memory Modal */}
       {selectedMemory && (
         <div className="modal-overlay" style={{ padding: '40px', boxSizing: 'border-box' }}>
-          <div style={{ width: '100%', maxWidth: '900px', height: '100%', display: 'flex', gap: '24px', position: 'relative' }}>
+          <div style={{ width: '100%', maxWidth: '1000px', height: '100%', display: 'flex', gap: '24px', position: 'relative' }}>
             
             {/* Vùng hiển thị Ảnh/Video to */}
-            <div style={{ flex: 1, background: '#000', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <div style={{ flex: 1, background: '#000', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
               {selectedMemory.fileType === 'video' ? (
                 <video src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%' }} controls autoPlay />
               ) : (
-                <img src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                <>
+                  <img src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  {/* Nút AI OCR đè lên ảnh */}
+                  <button 
+                    onClick={runOCR}
+                    disabled={isOcrRunning}
+                    style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
+                  >
+                    {isOcrRunning ? `⏳ Đang dùng Gemini quét ảnh...` : '✨ Quét chữ bằng Gemini AI'}
+                  </button>
+                </>
               )}
             </div>
 
             {/* Cột Công cụ bên phải */}
-            <div className="modal-content" style={{ width: '320px', height: 'max-content' }}>
+            <div className="modal-content" style={{ width: '350px', height: 'max-content' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Chi tiết Kỷ niệm</h3>
-                <button onClick={() => setSelectedMemory(null)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✖</button>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Kỷ niệm</h3>
+                <button onClick={() => { setSelectedMemory(null); if(isListening) recognitionRef.current.stop(); }} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✖</button>
               </div>
 
               <form onSubmit={handleUpdateMemory}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Tiêu đề / Ghi chú</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Nội dung / Câu chuyện</label>
+                  {/* Nút Mic Nhận diện giọng nói */}
+                  <button 
+                    type="button" 
+                    onClick={toggleListen}
+                    style={{ background: isListening ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)', color: isListening ? '#f87171' : 'white', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.3s' }}
+                  >
+                    {isListening ? '🔴 Đang nghe...' : '🎙️ Nói để gõ'}
+                  </button>
+                </div>
                 <textarea 
                   value={memoryTitle}
                   onChange={e => setMemoryTitle(e.target.value)}
                   className="form-input"
-                  style={{ minHeight: '80px', resize: 'vertical' }}
+                  style={{ minHeight: '120px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid var(--border-color)' }}
                   placeholder="Thêm mô tả cho kỷ niệm này..."
                 />
                 
                 <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
                   <button type="submit" disabled={updatingMemory} className="btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
-                    {updatingMemory ? '⏳' : 'Lưu'}
+                    {updatingMemory ? '⏳' : 'Lưu lại'}
                   </button>
                   <button type="button" onClick={handleDeleteMemory} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5' }}>
                     🗑️ Xóa

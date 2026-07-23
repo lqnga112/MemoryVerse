@@ -10,6 +10,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const mongoose = require('mongoose');
+
+// Connect to MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_memory_db';
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ [Database] Kết nối MongoDB thành công!'))
+  .catch((err) => console.error('❌ [Database] Lỗi kết nối MongoDB:', err));
+
 // Health Check API
 app.get('/api/health', (req, res) => {
   res.json({

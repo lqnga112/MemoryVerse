@@ -19,7 +19,7 @@ export default function Register() {
       });
       localStorage.setItem('token', res.data.token);
       alert('Đăng ký thành công!');
-      navigate('/');
+      navigate('/profile');
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng ký thất bại');
     }

@@ -10,6 +10,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files for uploaded images/videos
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 const mongoose = require('mongoose');
 
 // Connect to MongoDB

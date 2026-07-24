@@ -83,3 +83,17 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server khi đăng nhập' });
   }
 };
+
+exports.getUserProfile = async (req, res) => {
+  try {
+    // req.user được gán từ authMiddleware
+    const user = await User.findById(req.user.userId).select('-password_hash');
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({ message: 'Lỗi server khi lấy thông tin cá nhân' });
+  }
+};

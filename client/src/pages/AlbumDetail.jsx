@@ -246,13 +246,59 @@ const AlbumDetail = () => {
   return (
     <div className="layout-container">
       {/* Sidebar */}
-      <aside className="glass-card sidebar" style={{ width: '80px', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <button 
-          onClick={() => navigate('/profile')} 
-          style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}
-        >
-          🔙
-        </button>
+      <aside className="glass-card sidebar" style={{ width: '260px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div>
+          <button 
+            onClick={() => navigate('/profile')} 
+            className="btn-outline"
+            style={{ width: '100%', marginBottom: '16px', justifyContent: 'flex-start', border: '1px solid rgba(168, 139, 119, 0.2)' }}
+          >
+            🔙 Quay Lại
+          </button>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button 
+              onClick={() => setActiveTab('timeline')} 
+              className={`btn-outline ${activeTab === 'timeline' ? 'active' : ''}`}
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              ⏳ Dòng Thời Gian
+            </button>
+            <button 
+              onClick={() => setActiveTab('family')} 
+              className={`btn-outline ${activeTab === 'family' ? 'active' : ''}`}
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              🌳 Sơ Đồ Gia Đình
+            </button>
+            <button 
+              onClick={() => setActiveTab('map')} 
+              className={`btn-outline ${activeTab === 'map' ? 'active' : ''}`}
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              🗺️ Bản Đồ Ký Ức
+            </button>
+            <button 
+              onClick={() => setActiveTab('chat')} 
+              className={`btn-outline ${activeTab === 'chat' ? 'active' : ''}`}
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              💬 Trò Chuyện AI
+            </button>
+            <button 
+              onClick={() => setActiveTab('story')} 
+              className={`btn-outline ${activeTab === 'story' ? 'active' : ''}`}
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              📖 Cuốn Hồi Ký
+            </button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(168, 139, 119, 0.2)', paddingTop: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+          <p>Hành trình lưu giữ bởi</p>
+          <p style={{ fontWeight: 'bold', color: 'var(--primary-brown)' }}>MemoryVerse AI</p>
+        </div>
       </aside>
 
       <main className="glass-card main-content" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -289,30 +335,7 @@ const AlbumDetail = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-          <button 
-            onClick={() => setActiveTab('timeline')} 
-            className={`btn-outline ${activeTab === 'timeline' ? 'active' : ''}`}
-            style={{ borderRadius: '20px' }}
-          >
-            ⏳ Dòng Thời Gian
-          </button>
-          <button 
-            onClick={() => setActiveTab('story')} 
-            className={`btn-outline ${activeTab === 'story' ? 'active' : ''}`}
-            style={{ borderRadius: '20px' }}
-          >
-            📖 Cuốn Hồi Ký
-          </button>
-          <button 
-            onClick={() => setActiveTab('chat')} 
-            className={`btn-outline ${activeTab === 'chat' ? 'active' : ''}`}
-            style={{ borderRadius: '20px' }}
-          >
-            💬 Trò Chuyện (AI)
-          </button>
-        </div>
+
 
         {/* Content Area */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
@@ -337,7 +360,7 @@ const AlbumDetail = () => {
                       {/* Memory Content */}
                       <div 
                         onClick={() => openLightbox(memory)}
-                        style={{ flex: 1, background: '#FFFFFF', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(155, 119, 92, 0.2)', boxShadow: 'var(--shadow-soft)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '16px', alignItems: 'center' }}
+                        style={{ flex: 1, background: '#FFFFFF', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.2)', boxShadow: 'var(--shadow-soft)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '16px', alignItems: 'center' }}
                       >
                         {/* Thumbnail */}
                         <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#f5f5f5', flexShrink: 0 }}>
@@ -369,6 +392,98 @@ const AlbumDetail = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'family' && (
+            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', textAlign: 'center' }}>
+              <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--primary-brown)' }}>🌳 Sơ Đồ Gia Đình</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Phả hệ các thế hệ liên quan đến {album?.title}</p>
+              
+              {/* CSS Family Tree layout */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '32px' }}>
+                {/* Generation 1: Ancestors */}
+                <div style={{ display: 'flex', gap: '24px' }}>
+                  <div style={{ padding: '16px', background: '#FAF6F0', border: '2px solid var(--primary-brown)', borderRadius: '12px', width: '180px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold' }}>ÔNG NỘI / ÔNG NGOẠI</div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold', margin: '4px 0' }}>Nguyễn Văn Bình</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Sinh năm 1952</div>
+                  </div>
+                  <div style={{ padding: '16px', background: '#FAF6F0', border: '2px solid var(--primary-brown)', borderRadius: '12px', width: '180px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold' }}>BÀ NỘI / BÀ NGOẠI</div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold', margin: '4px 0' }}>Trần Thị Lan</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Sinh năm 1956</div>
+                  </div>
+                </div>
+
+                {/* Connection line */}
+                <div style={{ width: '2px', height: '24px', background: 'var(--primary-brown)' }}></div>
+
+                {/* Generation 2: Children */}
+                <div style={{ display: 'flex', gap: '48px', position: 'relative' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ padding: '16px', background: '#FFFFFF', border: '1px solid rgba(168, 139, 119, 0.4)', borderRadius: '12px', width: '180px' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold' }}>CON TRAI CẢ</div>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', margin: '4px 0' }}>Nguyễn Bình Minh</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Sinh năm 1980</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ padding: '16px', background: '#FFFFFF', border: '1px solid rgba(168, 139, 119, 0.4)', borderRadius: '12px', width: '180px' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold' }}>CON GÁI ÚT</div>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', margin: '4px 0' }}>Nguyễn Lan Anh</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Sinh năm 1985</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'map' && (
+            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)' }}>
+              <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--primary-brown)' }}>🗺️ Bản Đồ Ký Ức</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Các địa điểm gắn liền với kỷ niệm của {album?.title}</p>
+              
+              <div style={{ display: 'flex', gap: '24px', height: '400px' }}>
+                {/* Mock Map Panel */}
+                <div style={{ flex: 2, background: '#EAE6DF', borderRadius: '12px', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(168, 139, 119, 0.3)' }}>
+                  {/* Visual Map Grid Lines */}
+                  <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(var(--light-brown) 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.15 }}></div>
+                  
+                  {/* Interactive Pins */}
+                  <div style={{ position: 'absolute', top: '35%', left: '45%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
+                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Hà Nội</div>
+                  </div>
+
+                  <div style={{ position: 'absolute', top: '65%', left: '30%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
+                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Nam Định</div>
+                  </div>
+
+                  <div style={{ position: 'absolute', top: '50%', left: '70%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
+                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Hải Phòng</div>
+                  </div>
+                </div>
+
+                {/* Location List Panel */}
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <h4 style={{ fontSize: '16px', borderBottom: '1px solid rgba(168, 139, 119, 0.2)', paddingBottom: '8px' }}>Địa điểm đã lưu</h4>
+                  {memories.filter(m => m.location).length === 0 ? (
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Chưa có địa điểm nào được lưu. Hãy chỉnh sửa kỷ niệm ở Timeline để thêm địa điểm.</p>
+                  ) : (
+                    memories.filter(m => m.location).map((m, idx) => (
+                      <div key={idx} style={{ padding: '12px', background: '#FCFBF9', border: '1px solid rgba(168, 139, 119, 0.2)', borderRadius: '8px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--primary-brown)' }}>{m.location}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Kỷ niệm: {m.title || 'Không tiêu đề'}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

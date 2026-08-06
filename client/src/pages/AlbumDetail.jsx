@@ -298,6 +298,8 @@ const AlbumDetail = () => {
     } finally {
       setIsChatting(false);
     }
+  };
+
   const renderTree = (parentId = null) => {
     const nodes = familyMembers.filter(m => m.parentId === parentId);
     if (nodes.length === 0) return null;

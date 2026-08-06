@@ -815,6 +815,7 @@ const AlbumDetail = () => {
                       </div>
                     ))
                   )}
+                  </div>
                 </div>
               </div>
             </div>

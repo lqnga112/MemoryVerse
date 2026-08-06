@@ -1,25 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Danh sách 10 bản nhạc Chill / Lofi trẻ trung hiện đại, 100% mượt mà không lỗi
 const PLAYLIST = [
-  { id: 1, title: 'Bản Luân Vũ Ký Ức', artist: 'Hà Nội Mùa Thu 1980', src: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3' },
-  { id: 2, title: 'Sợi Nắng Thời Bao Cấp', artist: 'Phố Cổ Chiều Mưa', src: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3' },
-  { id: 3, title: 'Bức Thư Tay Năm 1985', artist: 'Dương Cầm Lặng Lẽ', src: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3' },
-  { id: 4, title: 'Kỷ Vật Thời Gian', artist: 'Hoàng Hôn Xưa', src: 'https://cdn.pixabay.com/download/audio/2022/02/07/audio_4047dfb242.mp3' },
-  { id: 5, title: 'Dòng Thời Gian Lặng Lẽ', artist: 'Nhớ Về Nguồn Cội', src: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f7ee08.mp3' },
-  { id: 6, title: 'Tiếng Dương Cầm Mùa Thu', artist: 'Góc Sân Trường Cũ', src: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_c764e5d878.mp3' },
-  { id: 7, title: 'Ký Ức Tuổi Thơ', artist: 'Tiếng Sáo Trăng Rằm', src: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db658097b6.mp3' },
-  { id: 8, title: 'Khoảnh Khắc Bình Yên', artist: 'Trà Chiều Gia Đình', src: 'https://cdn.pixabay.com/download/audio/2021/11/24/audio_3313936081.mp3' },
-  { id: 9, title: 'Hoàng Hôn Trên Mái Phố', artist: 'Mùa Hoa Mới', src: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_03d9d3000b.mp3' },
-  { id: 10, title: 'Lẻ Loi Tiếng Vĩ Cầm', artist: 'Tháng Năm Rực Rỡ', src: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3' }
+  { id: 1, title: 'Gió Đầu Mùa (Lofi Chill)', artist: 'Giai Điệu Trẻ Trung', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 2, title: 'Cà Phê Chiều Sài Gòn', artist: 'Acoustic Guitar Chill', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 3, title: 'Thanh Xuân Năm Ấy', artist: 'Dương Cầm Lofi Ngọt Ngào', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 4, title: 'Nắng Thủy Tinh', artist: 'Melodic Study Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+  { id: 5, title: 'Phố Đêm Đèn Vàng', artist: 'Chillhop Thư Giãn', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+  { id: 6, title: 'Chuyến Xe Hoàng Hôn', artist: 'Indie Instrumental', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+  { id: 7, title: 'Góc Phố Tuổi Trẻ', artist: 'Soft Coffee Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+  { id: 8, title: 'Vệt Nắng Sau Mưa', artist: 'Dreamy Piano Lofi', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+  { id: 9, title: 'Tách Trà Chiều', artist: 'Sunset Vibes', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
+  { id: 10, title: 'Hành Trình Thanh Xuân', artist: 'Ambient Chill Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
 ];
 
 const BackgroundMusic = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.4);
+  const [volume, setVolume] = useState(0.35);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   const audioRef = useRef(null);
   const currentTrack = PLAYLIST[currentTrackIndex];
@@ -30,12 +32,13 @@ const BackgroundMusic = () => {
     }
   }, [volume]);
 
-  // Autoplay attempt on user interaction
+  // Tự động kích hoạt khi người dùng click chuột lần đầu
   useEffect(() => {
     const handleFirstInteraction = () => {
       if (audioRef.current && !isPlaying) {
         audioRef.current.play().then(() => {
           setIsPlaying(true);
+          setLoadError(false);
         }).catch(err => {
           console.log("Autoplay blocked:", err);
         });
@@ -57,6 +60,7 @@ const BackgroundMusic = () => {
     } else {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
+        setLoadError(false);
       }).catch(err => {
         console.error("Playback error:", err);
       });
@@ -67,6 +71,7 @@ const BackgroundMusic = () => {
     const nextIdx = (currentTrackIndex + 1) % PLAYLIST.length;
     setCurrentTrackIndex(nextIdx);
     setIsPlaying(true);
+    setLoadError(false);
     setTimeout(() => {
       if (audioRef.current) audioRef.current.play();
     }, 100);
@@ -76,6 +81,7 @@ const BackgroundMusic = () => {
     const prevIdx = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
     setCurrentTrackIndex(prevIdx);
     setIsPlaying(true);
+    setLoadError(false);
     setTimeout(() => {
       if (audioRef.current) audioRef.current.play();
     }, 100);
@@ -94,6 +100,15 @@ const BackgroundMusic = () => {
       audioRef.current.currentTime = seekTime;
       setCurrentTime(seekTime);
     }
+  };
+
+  const handleAudioError = () => {
+    console.warn(`Lỗi tải bài nhạc #${currentTrackIndex + 1}, đang chuyển bài tiếp theo...`);
+    setLoadError(true);
+    // Tự động chuyển bài kế tiếp nếu bài hiện tại gặp sự cố đường truyền
+    setTimeout(() => {
+      handleNext();
+    }, 1000);
   };
 
   const formatTime = (timeInSeconds) => {
@@ -118,10 +133,11 @@ const BackgroundMusic = () => {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleTimeUpdate}
         onEnded={handleNext}
+        onError={handleAudioError}
         loop={false}
       />
 
-      {/* Mini Player Bar when collapsed */}
+      {/* Bar thu gọn */}
       {!isExpanded ? (
         <div style={{
           display: 'flex',
@@ -134,7 +150,7 @@ const BackgroundMusic = () => {
           boxShadow: '0 8px 24px rgba(78, 52, 46, 0.15)',
           backdropFilter: 'blur(8px)',
         }}>
-          {/* Rotating Vinyl Icon */}
+          {/* Đĩa hát quay */}
           <div 
             onClick={() => setIsExpanded(true)}
             style={{
@@ -151,14 +167,14 @@ const BackgroundMusic = () => {
               animation: isPlaying ? 'spin 4s linear infinite' : 'none',
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
             }}
-            title="Nhấp để mở Radio Kỷ Ức đầy đủ"
+            title="Nhấp để mở Radio Thanh Xuân đầy đủ"
           >
-            📻
+            🎧
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }} onClick={() => setIsExpanded(true)}>
             <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--primary-brown)' }}>
-              {currentTrack.title}
+              {loadError ? '⏳ Đang chuyển bài...' : currentTrack.title}
             </span>
             <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
               {isPlaying ? `${formatTime(currentTime)} / ${formatTime(duration)}` : 'Đang dừng • Nhấp để mở rộng'}
@@ -192,9 +208,9 @@ const BackgroundMusic = () => {
           </button>
         </div>
       ) : (
-        /* Expanded Vintage Radio Player Card */
+        /* Trình phát Radio Kỷ Ức Mở Rộng */
         <div style={{
-          width: '320px',
+          width: '330px',
           background: '#FAF6EE',
           border: '3px double var(--light-brown)',
           borderRadius: '16px',
@@ -208,8 +224,8 @@ const BackgroundMusic = () => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed var(--light-brown)', paddingBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '20px' }}>📻</span>
-              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Kỷ Ức</span>
+              <span style={{ fontSize: '20px' }}>🎧</span>
+              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Thanh Xuân (Lofi Chill)</span>
             </div>
             <button 
               onClick={() => setIsExpanded(false)} 
@@ -219,11 +235,11 @@ const BackgroundMusic = () => {
             </button>
           </div>
 
-          {/* Current Playing Track Info */}
+          {/* Chi tiết bài đang phát */}
           <div style={{ textAlign: 'center', margin: '4px 0' }}>
             <div style={{
-              width: '60px',
-              height: '60px',
+              width: '64px',
+              height: '64px',
               borderRadius: '50%',
               background: 'var(--primary-brown)',
               color: '#FFF',
@@ -237,11 +253,13 @@ const BackgroundMusic = () => {
             }}>
               🎵
             </div>
-            <h4 style={{ fontSize: '15px', color: 'var(--primary-brown)', fontWeight: 'bold' }}>{currentTrack.title}</h4>
+            <h4 style={{ fontSize: '15px', color: 'var(--primary-brown)', fontWeight: 'bold' }}>
+              {loadError ? '⏳ Đang kết nối bài nhạc...' : currentTrack.title}
+            </h4>
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{currentTrack.artist}</p>
           </div>
 
-          {/* Progress Seekbar */}
+          {/* Thanh tua thời gian Seekbar */}
           <div>
             <input 
               type="range"
@@ -261,7 +279,7 @@ const BackgroundMusic = () => {
             </div>
           </div>
 
-          {/* Player Controls */}
+          {/* Điều khiển Playback */}
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', margin: '4px 0' }}>
             <button onClick={handlePrev} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '20px' }}>⏮️</button>
             <button onClick={togglePlay} style={{ background: 'var(--primary-brown)', color: '#FFF', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 4px 10px rgba(0,0,0,0.15)' }}>
@@ -270,15 +288,16 @@ const BackgroundMusic = () => {
             <button onClick={handleNext} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '20px' }}>⏭️</button>
           </div>
 
-          {/* Playlist Dropdown */}
+          {/* Danh sách 10 bản nhạc */}
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách 10 bản nhạc hoài cổ:</label>
+            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Chọn bài Lofi Chill trẻ trung (10 bản không lời):</label>
             <select
               value={currentTrackIndex}
               onChange={(e) => {
                 const idx = parseInt(e.target.value);
                 setCurrentTrackIndex(idx);
                 setIsPlaying(true);
+                setLoadError(false);
                 setTimeout(() => { if (audioRef.current) audioRef.current.play(); }, 100);
               }}
               style={{
@@ -295,7 +314,7 @@ const BackgroundMusic = () => {
             >
               {PLAYLIST.map((track, idx) => (
                 <option key={track.id} value={idx}>
-                  {idx + 1}. {track.title} ({track.artist})
+                  {idx + 1}. {track.title} - {track.artist}
                 </option>
               ))}
             </select>

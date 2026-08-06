@@ -28,6 +28,11 @@ const AlbumDetail = () => {
   const [generatingStory, setGeneratingStory] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
+
+  // Sort & Map states
+  const [timelineSortMode, setTimelineSortMode] = useState('upload');
+  const [isFullscreenTree, setIsFullscreenTree] = useState(false);
+  const mapRef = useRef(null);
   
   // Family Tree Draggable State (saved to LocalStorage per album/journey as an array)
   const [familyMembers, setFamilyMembers] = useState(() => {
@@ -184,11 +189,27 @@ const AlbumDetail = () => {
     }
   }, [id]);
 
+  const getLocationCoords = (locationName) => {
+    if (!locationName) return [16.047, 108.206];
+    const loc = locationName.toLowerCase();
+    if (loc.includes('hà nội') || loc.includes('hn')) return [21.0285, 105.8542];
+    if (loc.includes('hồ chí minh') || loc.includes('sài gòn') || loc.includes('hcm')) return [10.8231, 106.6297];
+    if (loc.includes('nam định') || loc.includes('nđ')) return [20.4312, 106.1834];
+    if (loc.includes('hải phòng') || loc.includes('hp')) return [20.8449, 106.6881];
+    if (loc.includes('đà nẵng') || loc.includes('đn')) return [16.0544, 108.2022];
+    if (loc.includes('huế')) return [16.4637, 107.5909];
+    if (loc.includes('nha trang')) return [12.2388, 109.1967];
+    if (loc.includes('đà lạt')) return [11.9404, 108.4583];
+    if (loc.includes('cần thơ')) return [10.0452, 105.7469];
+    return [16.047, 108.206];
+  };
+
   useEffect(() => {
     if (activeTab !== 'map' || !window.L) return;
 
     // Khởi tạo bản đồ thế giới Leaflet
     const map = window.L.map('map-canvas').setView([16.047, 108.206], 6);
+    mapRef.current = map; // Lưu instance bản đồ
 
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -198,23 +219,8 @@ const AlbumDetail = () => {
 
     memories.forEach(m => {
       if (m.location) {
-        let lat = 16.047, lng = 108.206; 
-        const loc = m.location.toLowerCase();
-        if (loc.includes('hà nội') || loc.includes('hn')) { lat = 21.0285; lng = 105.8542; }
-        else if (loc.includes('hồ chí minh') || loc.includes('sài gòn') || loc.includes('hcm')) { lat = 10.8231; lng = 106.6297; }
-        else if (loc.includes('nam định') || loc.includes('nđ')) { lat = 20.4312; lng = 106.1834; }
-        else if (loc.includes('hải phòng') || loc.includes('hp')) { lat = 20.8449; lng = 106.6881; }
-        else if (loc.includes('đà nẵng') || loc.includes('đn')) { lat = 16.0544; lng = 108.2022; }
-        else if (loc.includes('huế')) { lat = 16.4637; lng = 107.5909; }
-        else if (loc.includes('nha trang')) { lat = 12.2388; lng = 109.1967; }
-        else if (loc.includes('đà lạt')) { lat = 11.9404; lng = 108.4583; }
-        else if (loc.includes('cần thơ')) { lat = 10.0452; lng = 105.7469; }
-        else {
-          lat = 10 + Math.random() * 11;
-          lng = 103 + Math.random() * 6;
-        }
-
-        window.L.marker([lat, lng])
+        const coords = getLocationCoords(m.location);
+        window.L.marker(coords)
           .addTo(markersGroup)
           .bindPopup(`<b>${m.location}</b><br/>${m.title || 'Kỷ niệm'}`);
       }
@@ -237,6 +243,7 @@ const AlbumDetail = () => {
     });
 
     return () => {
+      mapRef.current = null;
       map.remove();
     };
   }, [activeTab, memories]);
@@ -518,97 +525,155 @@ const AlbumDetail = () => {
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
           
           {activeTab === 'timeline' && (
-            <div style={{ position: 'relative', paddingLeft: '24px' }}>
-              {/* Vertical Line */}
-              <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--light-brown)', opacity: 0.3 }}></div>
-              
-              {memories.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-                  <p style={{ fontSize: '36px', marginBottom: '16px' }}>🎞️</p>
-                  <p>Hành trình này chưa có kỷ niệm nào.</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                  {memories.map((memory, idx) => (
-                    <div key={memory._id} style={{ display: 'flex', gap: '24px', position: 'relative' }}>
-                      {/* Timeline Dot */}
-                      <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary-brown)', border: '2px solid var(--bg-dark)' }}></div>
-                      
-                      {/* Memory Content */}
-                      <div 
-                        onClick={() => openLightbox(memory)}
-                        style={{ flex: 1, background: '#FFFFFF', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.2)', boxShadow: 'var(--shadow-soft)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '16px', alignItems: 'center' }}
-                      >
-                        {/* Thumbnail */}
-                        <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#f5f5f5', flexShrink: 0 }}>
-                          {memory.fileType === 'video' ? (
-                            <video src={`http://localhost:5000${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : memory.fileType === 'audio' ? (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--light-brown)', color: 'white', fontSize: '32px' }}>🎵</div>
-                          ) : (
-                            <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'sepia(0.2)' }} />
-                          )}
-                        </div>
-                        
-                        {/* Details */}
-                        <div>
-                          <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>
-                            {new Date(memory.memoryDate || memory.createdAt).toLocaleDateString('vi-VN')} {memory.location ? `• ${memory.location}` : ''}
+            <div style={{ position: 'relative' }}>
+              {/* Sort Mode Selector */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px', gap: '8px', alignItems: 'center', zIndex: 10, position: 'relative' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Sắp xếp theo:</span>
+                <select 
+                  value={timelineSortMode} 
+                  onChange={(e) => setTimelineSortMode(e.target.value)}
+                  style={{ fontSize: '13px', padding: '6px 12px', border: '1px solid rgba(168, 139, 119, 0.3)', borderRadius: '6px', background: '#fff', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="upload">Thời gian tải lên (Mới nhất)</option>
+                  <option value="event">Thời gian của bức ảnh/kỷ vật (Theo ngày cài đặt)</option>
+                </select>
+              </div>
+
+              <div style={{ position: 'relative', paddingLeft: '24px' }}>
+                {/* Vertical Line */}
+                <div style={{ position: 'absolute', left: '7px', top: 0, bottom: 0, width: '2px', background: 'var(--light-brown)', opacity: 0.3 }}></div>
+                
+                {memories.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                    <p style={{ fontSize: '36px', marginBottom: '16px' }}>🎞️</p>
+                    <p>Hành trình này chưa có kỷ niệm nào.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    {[...memories]
+                      .sort((a, b) => {
+                        if (timelineSortMode === 'upload') {
+                          return new Date(b.createdAt) - new Date(a.createdAt);
+                        } else {
+                          const dateA = new Date(a.memoryDate || a.createdAt);
+                          const dateB = new Date(b.memoryDate || b.createdAt);
+                          return dateB - dateA;
+                        }
+                      })
+                      .map((memory, idx) => (
+                        <div key={memory._id} style={{ display: 'flex', gap: '24px', position: 'relative' }}>
+                          {/* Timeline Dot */}
+                          <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary-brown)', border: '2px solid var(--bg-dark)' }}></div>
+                          
+                          {/* Memory Content */}
+                          <div 
+                            onClick={() => openLightbox(memory)}
+                            style={{ flex: 1, background: '#FFFFFF', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.2)', boxShadow: 'var(--shadow-soft)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', gap: '16px', alignItems: 'center' }}
+                          >
+                            {/* Thumbnail */}
+                            <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#f5f5f5', flexShrink: 0 }}>
+                              {memory.fileType === 'video' ? (
+                                <video src={`http://localhost:5000${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : memory.fileType === 'audio' ? (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--light-brown)', color: 'white', fontSize: '32px' }}>🎵</div>
+                              ) : (
+                                <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'sepia(0.2)' }} />
+                              )}
+                            </div>
+                            
+                            {/* Details */}
+                            <div>
+                              <div style={{ fontSize: '12px', color: 'var(--light-brown)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                {new Date(memory.memoryDate || memory.createdAt).toLocaleDateString('vi-VN')} {memory.location ? `• ${memory.location}` : ''}
+                              </div>
+                              <h4 style={{ fontSize: '18px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                {memory.title || (memory.fileType === 'audio' ? 'Đoạn ghi âm' : memory.fileType === 'letter' ? 'Thư tay' : 'Kỷ niệm')}
+                              </h4>
+                              {memory.extractedText && (
+                                <p style={{ fontSize: '14px', color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                  "{memory.extractedText}"
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <h4 style={{ fontSize: '18px', color: 'var(--text-primary)', marginBottom: '8px' }}>
-                            {memory.title || (memory.fileType === 'audio' ? 'Đoạn ghi âm' : memory.fileType === 'letter' ? 'Thư tay' : 'Kỷ niệm')}
-                          </h4>
-                          {memory.extractedText && (
-                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                              "{memory.extractedText}"
-                            </p>
-                          )}
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {activeTab === 'family' && (
-            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={isFullscreenTree ? {
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: '#FFFFFF',
+              zIndex: 9999,
+              padding: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px'
+            } : {
+              padding: '24px',
+              background: '#FFFFFF',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid rgba(168, 139, 119, 0.15)',
+              boxShadow: 'var(--shadow-soft)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px'
+            }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ textAlign: 'left' }}>
                   <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình (Bảng Kéo Thả)</h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Kéo các thẻ để di chuyển vị trí, nhấp trực tiếp để sửa thông tin và liên kết các thành viên.</p>
                 </div>
-                <button 
-                  onClick={() => addMember(null)} 
-                  className="btn-primary"
-                  style={{ fontSize: '13px', padding: '8px 16px' }}
-                >
-                  ➕ Thêm Thành Viên Gốc
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    onClick={() => setIsFullscreenTree(!isFullscreenTree)} 
+                    className="btn-primary"
+                    style={{ fontSize: '13px', padding: '8px 16px', background: 'transparent', color: 'var(--primary-brown)', border: '1px solid var(--primary-brown)' }}
+                  >
+                    {isFullscreenTree ? '🚪 Thoát Toàn Màn Hình' : '📺 Toàn Màn Hình'}
+                  </button>
+                  <button 
+                    onClick={() => addMember(null)} 
+                    className="btn-primary"
+                    style={{ fontSize: '13px', padding: '8px 16px' }}
+                  >
+                    ➕ Thêm Thành Viên Gốc
+                  </button>
+                </div>
               </div>
 
-              {/* Workspace Board */}
+              {/* Workspace Board with Scrollbars */}
               <div 
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
                 style={{ 
-                  position: 'relative', 
                   width: '100%', 
-                  height: '600px', 
-                  background: '#FAF6EE', 
-                  border: '1px solid rgba(168, 139, 119, 0.25)',
+                  height: isFullscreenTree ? 'calc(100vh - 100px)' : '600px', 
+                  overflow: 'auto',
+                  border: '2px dashed rgba(168, 139, 119, 0.3)',
                   borderRadius: '12px',
-                  overflow: 'hidden',
-                  backgroundImage: 'radial-gradient(rgba(141, 110, 99, 0.12) 1.5px, transparent 1.5px)',
-                  backgroundSize: '20px 20px',
-                  userSelect: 'none',
-                  cursor: draggingNodeId ? 'grabbing' : 'default'
+                  background: '#FAF6EE'
                 }}
               >
-                {/* Connection lines SVG overlay */}
-                <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}>
+                <div 
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  style={{ 
+                    position: 'relative', 
+                    width: '2400px', 
+                    height: '1600px', 
+                    userSelect: 'none',
+                    cursor: draggingNodeId ? 'grabbing' : 'default',
+                    backgroundImage: 'radial-gradient(rgba(141, 110, 99, 0.12) 1.5px, transparent 1.5px)',
+                    backgroundSize: '24px 24px'
+                  }}
+                >
+                  {/* Connection lines SVG overlay (must span full board area) */}
+                  <svg style={{ position: 'absolute', top: 0, left: 0, width: '2400px', height: '1600px', pointerEvents: 'none', zIndex: 1 }}>
                   {familyMembers.map(node => 
                     (node.connections || []).map(targetId => {
                       const target = familyMembers.find(n => n.id === targetId);
@@ -732,8 +797,20 @@ const AlbumDetail = () => {
                     <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Chưa có địa điểm nào được lưu. Hãy chỉnh sửa kỷ niệm ở Timeline để thêm địa điểm.</p>
                   ) : (
                     memories.filter(m => m.location).map((m, idx) => (
-                      <div key={idx} style={{ padding: '12px', background: '#FCFBF9', border: '1px solid rgba(168, 139, 119, 0.2)', borderRadius: '8px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--primary-brown)' }}>{m.location}</div>
+                      <div 
+                        key={idx} 
+                        onClick={() => {
+                          if (mapRef.current) {
+                            const coords = getLocationCoords(m.location);
+                            mapRef.current.setView(coords, 14, { animate: true });
+                          }
+                        }}
+                        style={{ padding: '12px', background: '#FCFBF9', border: '1px solid rgba(168, 139, 119, 0.2)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#FAF6EE'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#FCFBF9'}
+                        title="Bấm để di chuyển bản đồ đến đây"
+                      >
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--primary-brown)' }}>📍 {m.location}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Kỷ niệm: {m.title || 'Không tiêu đề'}</div>
                       </div>
                     ))

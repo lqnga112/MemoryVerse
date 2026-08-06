@@ -1,0 +1,14 @@
+Line 46: PHẦN 1. GIỚI THIỆU CHUNG
+Line 54: PHẦN 2. KHẢO SÁT HỆ THỐNG
+Line 59: 2.3 Đối tượng sử dụng hệ thống
+Line 60: PHẦN 3. PHÂN TÍCH HỆ THỐNG
+Line 68: PHẦN 4. THIẾT KẾ HỆ THỐNG
+Line 75: PHẦN 5. XÂY DỰNG CƠ SỞ DỮ LIỆU
+Line 78: PHẦN 6. TRIỂN KHAI HỆ THỐNG
+Line 86: PHẦN 7. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+Line 142: PHẦN 1. GIỚI THIỆU CHUNG
+Line 165: PHẦN 2. KHẢO SÁT HỆ THỐNG 
+Line 208: 2.3 Đối tượng sử dụng hệ thống
+Line 215: PHẦN 3. PHÂN TÍCH  HỆ THỐNG
+Line 290: PHẦN 4. THIẾT KẾ HỆ THỐNG
+Line 377: PHẦN 7. KẾT LUẬN

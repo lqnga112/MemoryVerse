@@ -1,0 +1,397 @@
+TRƯỜNG CAO ĐẲNG FPT POLYTECHNIC
+---🙠🕮🙢---
+
+
+*
+
+
+
+BÁO CÁO DỰ ÁN TỐT NGHIỆP
+
+MemoryVerse
+
+
+Giảng viên hướng dẫn: 
+Nguyễn Thành Trung
+Chuyên ngành:
+Lập trình ứng dụng trí tuệ nhân tạo
+Nhóm thực hiện: 
+3 chấm
+Thành viên:
+Lê Quỳnh Nga - PH69149
+Nguyễn Trọng Hưng - PH69150
+Nguyễn Hoàng Minh 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hà Nội – 2026
+MỤC LỤC
+
+LỜI MỞ ĐẦU
+
+GIẢI THÍCH THUẬT NGỮ
+
+PHẦN 1. GIỚI THIỆU CHUNG
+1.1 Giới thiệu đề tài
+1.1.1 Lý do chọn đề tài
+1.1.2 Mục tiêu làm đề tài
+1.2 Thành viên tham gia dự án
+1.3 Các công cụ và công nghệ sử dụng
+1.3.1 Các công cụ
+1.3.2 Các công nghệ
+PHẦN 2. KHẢO SÁT HỆ THỐNG
+2.1 Bài toán nghiệp vụ
+2.1.1 Bối cảnh thực tế và nhu cầu số hóa ký ức gia đình
+2.1.2 Các quy trình nghiệp vụ cốt lõi trong hệ thống
+2.2 Hệ thống tương tự
+2.3 Đối tượng sử dụng hệ thống
+PHẦN 3. PHÂN TÍCH HỆ THỐNG
+3.1 Phân tích hiện trạng (SWOT)
+3.2 Danh sách tác nhân (Actor)
+3.3 Danh sách các Use Case
+3.4 Mô hình hệ thống (Use Case Model)
+3.5 Mô tả Use Case
+3.6 Ma trận phân quyền chức năng
+3.7 Sơ đồ hoạt động
+PHẦN 4. THIẾT KẾ HỆ THỐNG
+4.1 Thiết kế kiến trúc hệ thống
+4.2 Thiết kế giao diện (Phác thảo cấu trúc)
+4.3 Thuật toán và công nghệ đặc sắc
+4.3.1 Công nghệ bóc tách chữ viết tay (AI OCR)
+4.3.2 Thuật toán nhận diện giọng nói thời gian thực (Speech Recognition)
+4.3.3 Kiến trúc hỏi đáp thông minh RAG (Retrieval-Augmented Generation)
+PHẦN 5. XÂY DỰNG CƠ SỞ DỮ LIỆU
+5.1 Cơ sở dữ liệu (Mô hình ERD / Cấu trúc NoSQL)
+5.2 Chi tiết các bảng / Collection
+PHẦN 6. TRIỂN KHAI HỆ THỐNG
+6.1 Yêu cầu phần cứng và phần mềm
+6.1.1 Yêu cầu phần cứng
+6.1.2 Yêu cầu phần mềm
+6.2 Danh sách kịch bản kiểm thử (Test Cases)
+6.3 Hướng dẫn cài đặt và cấu hình
+6.3.1 Cài đặt môi trường phát triển (Local Development)
+6.3.2 Hướng dẫn đưa ứng dụng lên máy chủ Internet (Hosting/Deployment)
+PHẦN 7. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+
+
+LỜI MỞ ĐẦU
+Trong guồng quay hối hả của cuộc sống hiện đại, những khoảnh khắc quý giá của một đời người và những câu chuyện truyền thống của gia đình thường dễ dàng bị lãng quên hay phai mờ theo năm tháng. Một bức ảnh ngả vàng, một lá thư tay úa màu hay một đoạn băng ghi âm cũ kỹ không chỉ đơn thuần là những vật dụng vô tri, mà đó là những mảnh ghép vô giá cấu thành nên bản nguyên của mỗi con người, là sợi dây vô hình kết nối giữa các thế hệ. Thế nhưng, theo thời gian, việc bảo tồn và lưu truyền những ký ức rời rạc ấy lại đang trở thành một thách thức lớn.
+Từ những trăn trở đó, cùng với những kiến thức đã được tích lũy trong quá trình học tập tại Trường Cao đẳng FPT Polytechnic, nhóm chúng em đã quyết định thực hiện dự án "MemoryVerse – Nơi công nghệ AI gặp gỡ cảm xúc con người". 
+Hướng tới mục tiêu không chỉ là một kho lưu trữ dữ liệu khô khan, MemoryVerse mang sứ mệnh tái hiện lại một cách sống động "cuốn phim cuộc đời" của mỗi cá nhân. Bằng việc ứng dụng các công nghệ tiên tiến nhất của Trí tuệ nhân tạo (AI) – như nhận diện quang học (OCR) để đọc thư tay, xử lý giọng nói (STT) để bóc băng ghi âm và mô hình RAG (Retrieval-Augmented Generation) để tối ưu truy xuất thông tin dữ liệu lớn – hệ thống có thể tự động xâu chuỗi các cột mốc thời gian và viết nên những cuốn hồi ký trọn vẹn. Hơn thế nữa, AI trong MemoryVerse còn đóng vai trò như một "bảo tàng gia", cho phép người dùng trò chuyện trực tiếp với những ký ức của ông bà, tổ tiên, biến di sản quá khứ thành bài học sống động cho thế hệ mai sau.
+Dù đã dành nhiều nỗ lực để hoàn thành báo cáo này, song do hạn chế về mặt kinh nghiệm thực tiễn nên bài báo cáo khó tránh khỏi những thiếu sót. Nhóm chúng em rất mong nhận được những ý kiến đóng góp quý báu từ quý Thầy/Cô để đề tài được hoàn thiện hơn.
+Nhóm chúng em xin gửi lời cảm ơn chân thành đến ban giám hiệu nhà trường FPT Polytechnic, và đặc biệt là Thầy Nguyễn Thành Trung, người đã tận tình định hướng, chỉ bảo và đồng hành cùng nhóm trong suốt quá trình thực hiện dự án này.
+Xin chân thành cảm ơn!
+
+
+GIẢI THÍCH THUẬT NGỮ 
+
+STT
+Thuật ngữ
+Giải thích
+1
+Front-end
+Giao diện hiển thị trực quan của ứng dụng Web mà người dùng có thể nhìn thấy và tương tác trực tiếp (sử dụng HTML, CSS, JavaScript thông qua React/Vite).
+2
+Back-end
+Phần xử lý logic nghiệp vụ ngầm phía máy chủ (Server-side) dùng để quản trị dữ liệu, phân quyền và giao tiếp giữa ứng dụng với cơ sở dữ liệu (sử dụng Node.js & Express).
+3
+RESTful API
+Chuẩn thiết kế cổng giao tiếp truyền nhận dữ liệu giữa Client và Server thông qua các giao thức HTTP tiêu chuẩn (như GET, POST, PUT, DELETE).
+4
+JWT (JSON Web Token)
+Một phương thức mã hóa dưới dạng chuỗi JSON dùng để xác thực và trao đổi thông tin an toàn giữa Client và Server sau khi đăng nhập thành công.
+5
+OCR (Optical Character Recognition)
+Công nghệ nhận dạng chữ viết quang học, giúp trích xuất văn bản chữ in hoặc chữ viết tay từ hình ảnh (như ảnh chụp thư tay cũ).
+6
+STT (Speech-to-Text)
+Công nghệ chuyển đổi tín hiệu giọng nói từ các tệp ghi âm hoặc âm thanh trực tiếp thành văn bản chữ viết.
+7
+RAG (Retrieval-Augmented Generation)
+Kỹ thuật tối ưu hóa câu trả lời của mô hình ngôn ngữ lớn (LLM) bằng cách truy xuất thêm ngữ cảnh từ một kho dữ liệu kỷ niệm thực tế trước khi sinh văn bản.
+8
+Vector Database
+Cơ sở dữ liệu chuyên biệt để lưu trữ và truy vấn nhanh dữ liệu dạng nhúng toán học (Vector Embeddings), phục vụ cho quá trình tìm kiếm ngữ cảnh của RAG.
+9
+LLM (Large Language Model)
+Mô hình ngôn ngữ lớn được huấn luyện trên lượng dữ liệu khổng lồ nhằm hiểu và sinh văn bản tự nhiên giống con người (như mô hình Gemini hay Ollama Vistral).
+10
+ORM (Object-Relational Mapping)
+Kỹ thuật lập trình giúp ánh xạ các bảng dữ liệu trong cơ sở dữ liệu thành các đối tượng tương ứng trong mã nguồn (trong dự án sử dụng Mongoose cho MongoDB).
+11
+Middleware
+Các hàm trung gian nằm giữa luồng gửi yêu cầu (Request) và xử lý dữ liệu của Server, thường dùng để kiểm tra quyền truy cập đăng nhập hoặc lọc dữ liệu đầu vào.
+12
+Multer
+Thư viện Middleware của Node.js chuyên dùng để xử lý và quản lý việc tải lên các tệp tin đa phương tiện từ Client (như ảnh, âm thanh, video).
+13
+MongoDB
+Hệ quản trị cơ sở dữ liệu phi quan hệ (NoSQL) hướng tài liệu, lưu trữ dữ liệu dưới dạng cấu trúc JSON/BSON linh hoạt, dùng để lưu thông tin người dùng và kỷ niệm.
+PHẦN 1. GIỚI THIỆU CHUNG
+1. 1 Giới thiệu đề tài
+1.1.1 Lý do chọn đề tài
+<<vì sao chọn đề tài này mà không chọn đề tài khác???>
+
+1.1.2 Mục mục tiêu làm đề tài
+<<Liệt kê các tiêu chí kết quả cần đạt được trong dự án>>
+
+
+1.2 Thành viên tham gia dự án 
+
+<<danh sách các thành viên tham gia làm dự án, ghi rõ vai trò của từng thành viên trong dự án, ghi giống phiếu đăng ký đề tài>>
+
+1.3 Các công cụ và công nghệ sử dụng
+1.3.1 Các công cụ
+
+<<SV sử dụng công cụ gì để làm ra sản phẩm thì liệt kê ra đây (có thể đưa logo vào cho sinh động, vd: android studio, vs code....>>
+
+1.3.2 Các công nghệ
+
+<<VD: Mongodb, firebase.... >>
+
+
+PHẦN 2. KHẢO SÁT HỆ THỐNG 
+2.1 Bài toán nghiệp vụ
+2.1.1 Bối cảnh thực tế và nhu cầu số hóa ký ức gia đình
+Trong thời đại chuyển đổi số mạnh mẽ, hầu hết mọi khía cạnh của cuộc sống đều được số hóa, tuy nhiên các giá trị tinh thần mang tính chất gia đình thường chưa có giải pháp chuyên biệt. Thực tế khảo sát cho thấy:
+·         Sự xuống cấp của tài liệu vật lý: Các gia đình Việt Nam thường lưu giữ những bức thư tay thời chiến/thời bao cấp, những cuốn nhật ký cũ, ảnh giấy đã úa màu hoặc các cuộn băng ghi âm cassette ghi lại lời nhắn nhủ của ông bà. Theo thời gian và khí hậu nhiệt đới ẩm, các kỷ vật này đang bị hủy hoại dần (mực phai, giấy mục, băng bị ẩm mốc).
+·         Nhu cầu kết nối thế hệ: Thế hệ trẻ ngày nay (Gen Z, Gen Alpha) có xu hướng tiếp cận thông tin nhanh chóng qua công nghệ và đang dần xa rời các câu chuyện kể truyền miệng mang tính lịch sử của dòng họ. Có một khoảng cách thế hệ lớn về mặt phương thức giao tiếp và giữ gìn sợi dây liên kết gia đình.
+·         Sự phân tán dữ liệu số: Dù mỗi cá nhân đều sở hữu smartphone để lưu ảnh hay video, nhưng các tệp tin này nằm rải rác trên Cloud cá nhân (Google Drive, iCloud) hoặc các mạng xã hội (Facebook, Zalo). Chúng thiếu tính bảo mật riêng tư cho gia đình, thiếu sự sắp đặt theo dòng thời gian cuộc đời của các thành viên và không thể tìm kiếm, truy vấn thông tin một cách có hệ thống.
+Từ đó, bài toán đặt ra là cần một Hệ thống Quản lý Kỷ niệm Gia đình (Family Memory System) kết hợp trí tuệ nhân tạo để vừa thực hiện số hóa lưu trữ lâu dài, vừa chuyển đổi các dữ liệu phi cấu trúc (hình ảnh thư tay, giọng nói ghi âm) thành tri thức số có thể tìm kiếm, tổng hợp và tương tác đa chiều.
+2.1.2 Các quy trình nghiệp vụ cốt lõi trong hệ thống
+Hệ thống MemoryVerse triển khai năm quy trình nghiệp vụ chính phối hợp chặt chẽ giữa tương tác người dùng và các dịch vụ xử lý AI nền tảng:
+Quy trình 1: Quản lý và Phân loại Kỷ niệm đa phương tiện (Memory Ingestion & Classification): Người dùng tải lên các file kỷ niệm ở nhiều định dạng (image, video, audio, handwritten_letter). Hệ thống tiến hành lưu trữ file gốc an toàn trên máy chủ cục bộ hoặc dịch vụ Cloud Storage. Đồng thời thực hiện phân loại kỷ niệm vào các Album tương ứng (Hành trình cuộc đời) và ghi nhận các metadata quan trọng như: Tiêu đề kỷ niệm, Ngày chụp/diễn ra (taken_date), Địa điểm xảy ra sự kiện (location_name, tọa độ kinh/vĩ độ phục vụ hiển thị bản đồ kỷ niệm), và Thành viên liên quan trực tiếp.
+Quy trình 2: Số hóa tài liệu viết tay bằng AI OCR (Optical Character Recognition): Chuyển đổi các hình ảnh chụp thư tay, tài liệu giấy cũ của gia đình thành văn bản số. Khi người dùng tải lên một kỷ niệm dạng handwritten_letter, hệ thống tự động hoặc cho phép người dùng kích hoạt tiến trình chạy AI. Hệ thống sử dụng mô hình AI thị giác để phân tích cấu trúc chữ viết tay tiếng Việt trong ảnh, bóc tách và trích xuất nội dung văn bản một cách chính xác nhất, tránh việc người dùng phải nhập liệu thủ công. Văn bản trích xuất được lưu vào trường ocr_text trong cơ sở dữ liệu để phục vụ công tác tìm kiếm toàn văn (Full-text search) sau này.
+Quy trình 3: Chuyển đổi ghi âm kể chuyện bằng AI STT (Speech-to-Text): Chuyển đổi các tệp âm thanh ghi âm giọng nói cũ của ông bà, cha mẹ kể về quá khứ thành văn bản ký sự. Hệ thống nhận diện giọng nói tiếng Việt từ các file định dạng .mp3, .wav, .m4a và tiến hành trích xuất lời thoại thành văn bản thô dạng hội thoại/độc thoại. Kết quả bóc băng được lưu trữ vào trường stt_text của kỷ niệm giúp lưu giữ nguyên vẹn nội dung lời nói và bổ sung vào kho tri thức của gia đình.
+Quy trình 4: Tự động biên soạn Hồi ký gia đình (AI Story Generation): Kết nối các mảnh ký ức rời rạc thành một câu chuyện cuộc đời liền mạch có tính văn học. Hệ thống tổng hợp toàn bộ các kỷ niệm trong một Album theo trình tự thời gian tăng dần (taken_date). Gom các thông tin bao gồm: Tiêu đề sự kiện, Địa điểm, Văn bản trích xuất từ thư tay (OCR), Nội dung ghi âm (STT) và các ghi chú đi kèm thành một ngữ cảnh cuộc đời (Context). Gửi ngữ cảnh này tới mô hình ngôn ngữ lớn (LLM) kèm theo Prompt chuyên biệt để sinh ra một tác phẩm hồi ký gia đình dạng Markdown, chia theo các chương hồi (ví dụ: Thuở ấu thơ, Những năm tháng quân ngũ, Dựng xây gia đình, Tuổi già an yên).
+Quy trình 5: Trò chuyện tương tác với quá khứ (RAG AI Chatbot): Cung cấp giao diện nhắn tin cho phép các thành viên gia đình (đặc biệt là con cháu) đặt câu hỏi xoay quanh lịch sử và kỷ niệm của dòng họ. Khi nhận câu hỏi từ người dùng (ví dụ: 'Ông nội quê ở đâu?', 'Bức thư ông viết cho bà năm 1975 nói về điều gì?'), hệ thống sử dụng kỹ thuật RAG (Retrieval-Augmented Generation) tìm kiếm ngữ cảnh liên quan nhất từ kho dữ liệu kỷ niệm số hóa (tiêu đề, OCR thư tay, STT ghi âm). Đưa câu hỏi và ngữ cảnh chính xác cho LLM để tạo câu trả lời tự nhiên, chính xác, thân thiện, bảo đảm AI không tự bịa đặt thông tin nằm ngoài kho kỷ niệm của gia đình.
+2.2 Hệ thống tương tự
+Dưới đây là bảng đối sánh chi tiết giữa hệ thống MemoryVerse và các giải pháp hiện có trên thị trường nhằm làm rõ tính cấp thiết và tính mới của đề tài:
+Tiêu chí đối sánh
+Ancestry.com / MyHeritage
+Google / Apple Photos
+Saga (Saga.coach)
+MemoryVerse (Đề xuất)
+Mục tiêu cốt lõi
+Tra cứu phả hệ toàn cầu và phân tích liên kết ADN.
+Lưu trữ và phân loại hình ảnh cá nhân tự động.
+Ghi âm câu chuyện cuộc đời của cha mẹ thành sách in/audiobook.
+Số hóa, kết nối kỷ niệm gia đình đa phương tiện và tương tác AI.
+Công nghệ AI áp dụng
+So khớp hồ sơ dữ liệu lớn, xử lý ảnh cũ cơ bản.
+Nhận diện khuôn mặt, vật thể, tạo video kỷ niệm tự động.
+Trích xuất âm thanh cơ bản sang văn bản dạng viết.
+OCR đọc thư tay tiếng Việt, STT bóc băng, biên soạn Hồi ký & Chatbot RAG.
+Khả năng tương tác
+Tương tác tĩnh qua cây gia phả.
+Không có tính năng hỏi đáp thông minh.
+Tương tác một chiều (hỏi-đáp qua email định kỳ).
+Hỏi đáp trực tiếp thời gian thực với trợ lý ảo về lịch sử kỷ niệm gia đình.
+Tối ưu tiếng Việt & Tính bảo mật
+Rất hạn chế, không tối ưu ngôn ngữ Việt Nam. Lưu trên cloud công cộng quốc tế.
+Hỗ trợ tìm kiếm tiếng Việt tốt. Nguy cơ quét dữ liệu quảng cáo.
+Chưa hỗ trợ thị trường và ngôn ngữ tiếng Việt. Lưu trên máy chủ cloud.
+Tối ưu sâu ngôn ngữ tiếng Việt (bao gồm đọc chữ viết tay và giọng nói vùng miền). Khả năng chạy AI offline/local bảo mật dữ liệu tuyệt đối.
+
+2.3 Đối tượng sử dụng hệ thống
+Hệ thống MemoryVerse hướng tới phục vụ mô hình tương tác gia đình đa thế hệ. Tùy thuộc vào độ tuổi và nhu cầu, các đối tượng sử dụng được phân nhóm cụ thể như sau:
+1. Thế hệ lớn tuổi (Ông bà, Cha mẹ - The Storytellers): Nhóm người dùng có độ tuổi từ 55 trở lên, sở hữu kho tàng ký ức phong phú nhất nhưng khả năng tiếp cận các giao diện công nghệ mới thường hạn chế. Họ có nhu cầu kể lại những câu chuyện xưa cho con cháu nghe, mong muốn nhìn lại các kỷ niệm cũ mà không gặp khó khăn trong việc điều hướng phức tạp. Giao diện của hệ thống cần được tối giản, chữ to rõ ràng, thao tác ghi âm kể chuyện một chạm đơn giản.
+2. Thế hệ trung niên (Con cái trưởng thành - The Curators): Độ tuổi từ 30 đến 54, đóng vai trò là cầu nối trong gia đình. Họ thành thạo công nghệ, có ý thức giữ gìn truyền thống gia đình và chăm sóc tinh thần cho cả thế hệ đi trước lẫn đi sau. Họ có nhu cầu số hóa tất cả tư liệu giấy, sắp xếp khoa học dòng thời gian gia đình để làm quà tặng tinh thần cho bố mẹ và bài học giáo dục cho con cái. Hành vi chính của họ trên hệ thống bao gồm: Quản lý tài khoản gia đình, tạo các Album kỷ niệm, tải tệp tin lên, chạy AI trích xuất chữ viết/âm thanh, chỉnh sửa thông tin sự kiện và cấu trúc cây gia phả.
+3. Thế hệ trẻ (Con cháu - The Explorers): Độ tuổi từ 10 đến 29 (học sinh, sinh viên, người đi làm trẻ tuổi), lớn lên cùng thiết bị di động, quen thuộc với các giao diện chat và trợ lý ảo (như ChatGPT). Nhóm này có xu hướng tương tác năng động, thích trò chuyện và khám phá công nghệ mới. Họ có nhu cầu tìm hiểu về cuộc đời của ông bà, cha mẹ qua các phương thức sinh động như đọc Hồi ký tự động hoặc hỏi đáp trò chuyện trực tiếp qua AI Chatbot (RAG) để gắn kết tình thân một cách tự nhiên.
+4. Quản trị viên Hệ thống (System Administrator - The Operator): Đội ngũ kỹ sư vận hành hệ thống. Có nhiệm vụ giám sát dung lượng lưu trữ, theo dõi hiệu năng hoạt động của các dịch vụ AI offline (OCR, Speech-to-Text, LLM), bảo trì hệ thống và đảm bảo tính riêng tư, bảo mật an toàn thông tin dữ liệu cho mọi gia đình tham gia sử dụng.
+
+PHẦN 3. PHÂN TÍCH  HỆ THỐNG
+3.1 Phân tích hiện trạng
+<<phân tích điểm mạnh, điểm yếu, cơ hội, thách thức của đề tài đã lựa chọn theo mô hình SWOT>>
+
+3.2 Danh sách tác nhân (actor)
+
+<<tham khảo phần đối tượng sử dụng ở trên để liệt kê danh sách actor (đối tác động đến hệ thống: con người, hệ thống khác như ngân hàng, cổng thanh toán...) >>
+
+- Khách hàng
+- ....
+
+3.3 Danh sách các use case
+<<Liệt kê tên các use case, sử dụng động từ để đặt tên>>
+-
+3.4 Mô hình hệ thống (Use case model)
+<<Vẽ sơ đồ use case, vd sử dụng công cụ draw.io hoặc các công cụ vẽ khác để vẽ. Vẽ sơ đồ tổng quát và sơ đồ chi tiết theo từng use case, không vẽ chi tiết theo tác nhân>>
+Ví dụ:
+*  hoặc  *
+
+3.5 Mô tả Use case 
+
+STT
+Usecase
+Mô tả chung
+Input
+Output
+1
+Đăng ký
+Người dùng đăng ký tài khoản để trở thành member(thành viên) có thể bình luận, đặt hàng, theo dõi đơn hàng.
+Nhập thông tin tài khoản bao gồm: họ tên, email, sđt,….
+Hiển thị kết quả đăng ký (thành công, thất bại), tự động đăng nhập nếu kết quả thành công.
+2
+Đăng nhập
+Người dùng và quản trị viên đăng nhập để sử dụng các chức năng có được từ chức năng phân quyền cấp cho.
+Email và mật khẩu.
+Hiển thị kết quả đang nhập và chuyển hướng ra trang chủ nếu đăng nhập thành công.
+….
+…
+
+
+
+
+
+3.6 Ma trận phân quyền chức năng
+
+<< Bảng này dùng liệt kê danh sách nhóm đối tượng người dùng và được phép sử dụng chức năng nào trên phần mềm thì SV liệt kê vào đây>>
+
+STT
+Chức năng
+Khách
+Thành viên
+Quản trị
+1
+Đăng kí
+√
+
+
+2
+Cập nhật tài khoản
+
+√
+√
+
+
+
+
+
+
+3.7 Sơ đồ hoạt động
+
+<<SV vẽ sơ đồ hoạt động hoặc sơ đồ workflow của ứng dụng, >>
+ví dụ xem trong ảnh sơ đồ hoạt động của máy bán vé tự động
+*
+
+
+PHẦN 4. THIẾT KẾ HỆ THỐNG
+4.1 Thiết kế kiến trúc hệ thống
+Hệ thống MemoryVerse được triển khai dựa trên kiến trúc phân tầng Decoupled Architecture, tách biệt rõ ràng giữa Client (Giao diện Web), Backend API Server (xử lý logic nghiệp vụ và lưu trữ dữ liệu), và AI Inference Engine (máy chủ chạy các dịch vụ trí tuệ nhân tạo). Sơ đồ thành phần triển khai hệ thống được mô tả chi tiết như dưới đây:
++------------------------------------------------------------+
+|                 Client (Frontend Web App)                  |
+|           React.js / Vite (Giao diện người dùng)            |
++-----------------------------+------------------------------+
+                              | HTTP Requests / JWT Token
+                              v
++------------------------------------------------------------+
+|                 Backend Express.js Server                  |
+|  - Cổng Routing API             - Xác thực & Phân quyền    |
+|  - Quản lý tải lên (Multer)     - Kết nối cơ sở dữ liệu    |
++--------------+------------------------------+---------------+
+               |                              |
+               | Mongoose ORM                 | REST API (Gemini)
+               v                              v
++-----------------------------+ +----------------------------+
+|     Database Server         | |     AI Inference Server    |
+|      MongoDB Local          | |     (Google Gemini API)    |
+|  - Bộ nhớ User, Album       | |  - Xử lý OCR / STT         |
+|  - Dữ liệu OCR, STT         | |  - Sinh Hồi ký & Chatbot   |
++-----------------------------+ +----------------------------+
+Sơ đồ trên mô phỏng luồng di chuyển dữ liệu: Người dùng tương tác trên Frontend Web, gửi yêu cầu qua giao thức HTTP (kèm theo mã token xác thực JWT) tới Backend Server. Tại Backend, dữ liệu thô và các tệp tin đa phương tiện được lưu trữ trực tiếp trên đĩa cứng cục bộ thông qua Middleware Multer, đồng thời các thông tin cấu trúc sẽ được ghi nhận vào cơ sở dữ liệu MongoDB thông qua Mongoose ORM. Đối với các tác vụ liên quan tới Trí tuệ nhân tạo, Backend Server đóng vai trò trung gian đóng gói tệp tin gửi yêu cầu phân tích tới máy chủ Google Gemini API rồi nhận kết quả trả về cho Client.
+4.2 Thiết kế giao diện (Phác thảo cấu trúc)
+Hệ thống MemoryVerse thiết kế giao diện theo phong cách tối giản, hiện đại kết hợp hiệu ứng kính làm mờ (Glassmorphism), mang tone màu gỗ ấm hoài niệm (Retro Brown) phù hợp với chủ đề kỷ niệm gia đình. Giao diện trang chính AlbumDetail.jsx được bố cục gồm 3 vùng chức năng cốt lõi:
++-------------------------------------------------------------------------+
+| Sidebar | TIÊU ĐỀ ALBUM (Ví dụ: Kỷ niệm gia đình ông bà)   [+ Thêm kỷ niệm] |
+|---------+---------------------------------------------------------------|
+| [🔙]    |  Tabs: ( [Dòng Thời Gian]   [Cuốn Hồi Ký]   [Trò Chuyện AI] ) |
+|         |---------------------------------------------------------------|
+|         | * VÙNG HIỂN THỊ CHÍNH (Thay đổi theo Tab):                     |
+|         |                                                               |
+|         | [Tab Dòng thời gian]:                                         | 
+|         |  o-- (Ngày 12/05/1975) Bức ảnh chụp thời bao cấp              |
+|         |  o-- (Ngày 20/12/1980) Đoạn ghi âm giọng nói của bà           |
+|         |                                                               |
+|         | [Tab Cuốn Hồi ký]:                                            |
+|         |  - Văn bản hồi ký đầy cảm xúc được dựng lên từ AI...          |
+|         |                                                               |
+|         | [Tab Trò chuyện AI]:                                          |
+|         |  - Khung chat hỏi đáp: "Bức thư ông viết cho ai?"             |
+|         |                                                               |
++---------+---------------------------------------------------------------+
+| * MODAL XEM CHI TIẾT (LIGHTBOX khi click vào kỷ niệm):                  |
+| +------------------------------------+--------------------------------+ |
+| |                                    | [Thông tin kỷ niệm]            | |
+| |          Ảnh / Video to            | - Tiêu đề: Thư tay cũ...       | |
+| |                                    | - Nút: [🎙️ Nói để gõ]           | |
+| |  [✨ Quét chữ / Đọc thư tay (AI)]  | - Vùng nhập: Nội dung thư...   | |
+| |                                    | - Nút: [Lưu lại]   [🗑️ Xóa]     | |
+| +------------------------------------+--------------------------------+ |
++-------------------------------------------------------------------------+
+Mô tả các thành phần giao diện (đã triển khai mã nguồn):
+Sidebar: Nằm góc trái chứa phím quay lui [🔙] giúp điều hướng nhanh về trang quản lý hồ sơ của tài khoản.
+Tab Navigation: Gồm 3 nút chuyển nhanh các tab chính: Dòng thời gian, Cuốn Hồi ký, và Trò chuyện AI.
+Timeline Feed: Trục thời gian hiển thị danh sách dọc các kỷ niệm, tích hợp module tải lên đa dạng (ảnh, video, audio, thư tay).
+Lightbox Modal: Cửa sổ phóng to tích hợp các nút kích hoạt xử lý AI quét chữ (Gemini OCR) cho thư viết tay, hoặc bóc băng ghi âm (Gemini STT). Phía bên phải tích hợp chức năng ghi âm giọng nói chuyển đổi thành văn bản thời gian thực (Speech Recognition).
+4.3 Thuật toán và công nghệ đặc sắc
+4.3.1 Công nghệ bóc tách chữ viết tay (AI OCR): Hệ thống sử dụng mô hình Multimodal AI (gemini-flash-latest) có khả năng hiểu hình ảnh chất lượng cao. Khi gửi file ảnh chụp thư tay kèm Prompt chuyên biệt, thuật toán của AI sẽ nhận diện các đường nét viết tay tiếng Việt cổ/mờ, phân tích ngữ nghĩa để xuất ra văn bản chính xác lưu trữ vào cơ sở dữ liệu (trường ocr_text).
+4.3.2 Thuật toán nhận diện giọng nói thời gian thực (Speech Recognition): Tại giao diện nhập liệu chi tiết, hệ thống tích hợp trực tiếp công nghệ nhận diện giọng nói của Web Speech API sẵn có trong trình duyệt với ngôn ngữ đích vi-VN (webkitSpeechRecognition). Trình duyệt sẽ tự động thu âm giọng nói, phân tích âm vị theo thời gian thực và chuyển thành văn bản, hỗ trợ đắc lực cho người dùng lớn tuổi.
+4.3.3 Kiến trúc hỏi đáp thông minh RAG (Retrieval-Augmented Generation): Để chatbot trả lời chính xác lịch sử dòng họ mà không bị hiện tượng ảo giác AI, hệ thống sử dụng thuật toán RAG: Khi người dùng đặt câu hỏi, server sẽ truy vấn cơ sở dữ liệu để tìm kiếm các kỷ niệm liên quan gần nhất (bằng cách so khớp các trường ocr_text, stt_text), ghép thành dữ liệu ngữ cảnh (Context) rồi gửi cùng câu hỏi đến LLM.
+Để chạy ứng dụng MemoryVerse dưới môi trường máy tính cá nhân local, thực hiện theo các bước sau:
+Bước 1: Tải mã nguồn: Tải dự án từ kho chứa mã nguồn chung bằng lệnh:git clone https://github.com/lqnga112/MemoryVerse.git
+Bước 2: Cài đặt và cấu hình Backend (Server): Mở thư mục server bằng lệnhcd serverchạy lệnhnpm installđể tải các gói phụ thuộc. Đổi tên tệp '.env.example' thành '.env' và cấu hình các giá trị bao gồm: PORT=5000, MONGODB_URI=mongodb://localhost:27017/family_db, JWT_SECRET=your_secret_key, và GEMINI_API_KEY=key_api_gemini_cua_ban. Khởi chạy backend bằng lệnh:npm run dev
+Bước 3: Cài đặt và cấu hình Frontend (Client): Mở thư mục client bằng lệnhcd clientchạy lệnhnpm installKhởi chạy ứng dụng Frontend React bằng lệnh:npm run devTruy cập liên kết http://localhost:5173 trên trình duyệt để kiểm tra giao diện.
+6.3.2 Hướng dẫn đưa ứng dụng lên máy chủ Internet (Hosting/Deployment)
+Quy trình triển khai ứng dụng MemoryVerse lên hạ tầng Internet sử dụng VPS (Virtual Private Server) hoặc dịch vụ Hosting chuyên dụng:
+Bước 1: Thiết lập máy chủ: Đăng ký máy chủ VPS chạy Ubuntu Server. Cài đặt các phần mềm nền tảng cơ bản: Node.js, MongoDB Community Server, Git, và Nginx làm Web Server điều hướng.
+Bước 2: Cấu hình mã nguồn trên VPS: Sử dụng Git clone mã nguồn về thư mục '/var/www/memoryverse'. Tạo file cấu hình '.env' hoàn chỉnh cho server. Chạy lệnh cài đặt 'npm install' cho cả hai thư mục client và server.
+Bước 3: Biên dịch Frontend và Cấu hình Nginx: Tại thư mục client, chạy lệnhnpm run buildđể biên dịch code React thành các tệp tin tĩnh (HTML, JS, CSS) nằm trong thư mục 'dist'. Cấu hình Nginx để phục vụ trực tiếp thư mục tĩnh này tại cổng 80. Cấu hình Nginx Proxy_pass hướng toàn bộ các cổng /api về cổng backend Node.js (cổng 5000).
+Bước 4: Duy trì tiến trình Backend: Sử dụng công cụ PM2 để duy trì server Node.js chạy liên tục ngầm định ngay cả khi tắt SSH: chạy lệnhpm2 start src/server.js --name memoryverse-backend
+Địa chỉ Website hoạt động: Địa chỉ Website triển khai thử nghiệm: http://memoryverse.id.vn (Hoặc truy cập trực tiếp địa chỉ Localhost: http://localhost:5173 trong quá trình thử nghiệm đánh giá chấm điểm đề tài).
+6.3.3 Danh sách tài khoản thử nghiệm của hệ thống
+Để tạo điều kiện cho Hội đồng đánh giá và giáo viên kiểm tra nhanh các tính năng AI OCR, AI STT, Chatbot RAG, hệ thống đã cấu hình sẵn các tài khoản demo sau:
+Vai trò
+Email đăng nhập
+Mật khẩu
+Ghi chú quyền hạn
+Quản trị viên (Admin)
+admin@memoryverse.com
+Admin@123
+Quyền tối cao, truy cập trang dashboard quản lý chung.
+Người dùng thử (User)
+demo_user@memoryverse.com
+User@123
+Quyền thành viên gia đình, upload và chạy các tính năng AI.
+PHẦN 7. KẾT LUẬN
+7.1 Thời gian phát triển dự án
+
+7.2 Mức độ hoàn thành dự án
+
+<Sinh viên lập bảng ghi rõ chức năng đã hoàn thành, chưa hoàn thành, đánh giá tỉ lệ % hoàn thành>
+
+7.3 Những khó khăn rủi ro gặp phải và cách giải quyết
+
+7.4 Những bài học rút ra sau khi làm dự án
+
+7.5 Kế hoạch phát triển trong tương lai
+
+LỜI CẢM ƠN
+<SV tự viết  bằng suy nghĩ cá nhân, không copy>TÀI LIỆU THAM KHẢO
+- 
+- 
+*
+DỰ ÁN TỐT NGHIỆP - <3 CHẤM>	
+1033-5.7.1.8093

@@ -960,20 +960,20 @@ const AlbumDetail = () => {
                     disabled={isSttRunning}
                     style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
                   >
-                    {isSttRunning ? `⏳ Đang bóc băng ghi âm...` : '✨ Trích xuất văn bản (Gemini AI)'}
+                    {isSttRunning ? `⏳ Đang bóc băng ghi âm...` : '🔍 Trích xuất văn bản'}
                   </button>
                 </div>
               ) : (
                 <>
                   <img src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
-                  {/* Nút AI OCR chỉ ưu tiên cho thư tay hoặc ảnh */}
+                  {/* Nút OCR chỉ ưu tiên cho thư tay hoặc ảnh */}
                   {(selectedMemory.fileType === 'letter' || selectedMemory.fileType === 'image') && (
                     <button 
                       onClick={runOCR}
                       disabled={isOcrRunning}
                       style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', backdropFilter: 'blur(10px)', fontSize: '14px', fontWeight: 'bold' }}
                     >
-                      {isOcrRunning ? `⏳ Đang dùng Gemini quét ảnh...` : (selectedMemory.fileType === 'letter' ? '✨ Đọc thư tay (Gemini AI)' : '✨ Quét chữ (Gemini AI)')}
+                      {isOcrRunning ? `⏳ Đang quét ảnh...` : (selectedMemory.fileType === 'letter' ? '📝 Đọc thư tay' : '🔍 Quét chữ')}
                     </button>
                   )}
                 </>

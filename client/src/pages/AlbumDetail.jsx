@@ -779,7 +779,8 @@ const AlbumDetail = () => {
                 ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
           {activeTab === 'map' && (
             <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)' }}>
@@ -815,7 +816,6 @@ const AlbumDetail = () => {
                       </div>
                     ))
                   )}
-                  </div>
                 </div>
               </div>
             </div>

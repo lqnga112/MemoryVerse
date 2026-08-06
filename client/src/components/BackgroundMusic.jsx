@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Danh sách 10 bản nhạc Chill / Lofi trẻ trung hiện đại, 100% mượt mà không lỗi
+// Danh sách 10 Tình Khúc Bất Hủ (Piano & Acoustic Instrumental nhẹ nhàng, êm dịu, thư giãn)
 const PLAYLIST = [
-  { id: 1, title: 'Gió Đầu Mùa (Lofi Chill)', artist: 'Giai Điệu Trẻ Trung', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { id: 2, title: 'Cà Phê Chiều Sài Gòn', artist: 'Acoustic Guitar Chill', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-  { id: 3, title: 'Thanh Xuân Năm Ấy', artist: 'Dương Cầm Lofi Ngọt Ngào', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-  { id: 4, title: 'Nắng Thủy Tinh', artist: 'Melodic Study Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-  { id: 5, title: 'Phố Đêm Đèn Vàng', artist: 'Chillhop Thư Giãn', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
-  { id: 6, title: 'Chuyến Xe Hoàng Hôn', artist: 'Indie Instrumental', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
-  { id: 7, title: 'Góc Phố Tuổi Trẻ', artist: 'Soft Coffee Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
-  { id: 8, title: 'Vệt Nắng Sau Mưa', artist: 'Dreamy Piano Lofi', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-  { id: 9, title: 'Tách Trà Chiều', artist: 'Sunset Vibes', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
-  { id: 10, title: 'Hành Trình Thanh Xuân', artist: 'Ambient Chill Beats', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
+  { id: 1, title: 'Biển Tình', artist: 'Dương Cầm Êm Dịu', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 2, title: 'Dấu Tình Sương Gió', artist: 'Tình Khúc Dương Cầm', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 3, title: 'Bản Tình Ca Mùa Thu', artist: 'Piano Hòa Tấu Nhẹ Nhàng', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 4, title: 'Tháng Năm Rực Rỡ', artist: 'Acoustic Piano Ballad', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+  { id: 5, title: 'Như Cánh Vạc Bay', artist: 'Giai Điệu Trầm Ấm', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+  { id: 6, title: 'Tình Nhớ', artist: 'Dương Cầm Bình Yên', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+  { id: 7, title: 'Mưa Trên Phố Huế', artist: 'Hòa Tấu Hoài Niệm', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+  { id: 8, title: 'Tuổi Mộng Mơ', artist: 'Romantic Piano Melody', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+  { id: 9, title: 'Biển Nhớ', artist: 'Tiếng Dương Cầm Thư Giãn', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
+  { id: 10, title: 'Gửi Người Em Gái', artist: 'Tình Khúc Bất Hủ', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
 ];
 
 const BackgroundMusic = () => {
@@ -105,7 +105,6 @@ const BackgroundMusic = () => {
   const handleAudioError = () => {
     console.warn(`Lỗi tải bài nhạc #${currentTrackIndex + 1}, đang chuyển bài tiếp theo...`);
     setLoadError(true);
-    // Tự động chuyển bài kế tiếp nếu bài hiện tại gặp sự cố đường truyền
     setTimeout(() => {
       handleNext();
     }, 1000);
@@ -167,9 +166,9 @@ const BackgroundMusic = () => {
               animation: isPlaying ? 'spin 4s linear infinite' : 'none',
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
             }}
-            title="Nhấp để mở Radio Thanh Xuân đầy đủ"
+            title="Nhấp để mở Radio Tình Khúc Bất Hủ đầy đủ"
           >
-            🎧
+            📻
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }} onClick={() => setIsExpanded(true)}>
@@ -210,7 +209,7 @@ const BackgroundMusic = () => {
       ) : (
         /* Trình phát Radio Kỷ Ức Mở Rộng */
         <div style={{
-          width: '330px',
+          width: '340px',
           background: '#FAF6EE',
           border: '3px double var(--light-brown)',
           borderRadius: '16px',
@@ -224,8 +223,8 @@ const BackgroundMusic = () => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed var(--light-brown)', paddingBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '20px' }}>🎧</span>
-              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Thanh Xuân (Lofi Chill)</span>
+              <span style={{ fontSize: '20px' }}>📻</span>
+              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Tình Khúc Bất Hủ</span>
             </div>
             <button 
               onClick={() => setIsExpanded(false)} 
@@ -251,7 +250,7 @@ const BackgroundMusic = () => {
               animation: isPlaying ? 'spin 4s linear infinite' : 'none',
               boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
             }}>
-              🎵
+              🎼
             </div>
             <h4 style={{ fontSize: '15px', color: 'var(--primary-brown)', fontWeight: 'bold' }}>
               {loadError ? '⏳ Đang kết nối bài nhạc...' : currentTrack.title}
@@ -290,7 +289,7 @@ const BackgroundMusic = () => {
 
           {/* Danh sách 10 bản nhạc */}
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Chọn bài Lofi Chill trẻ trung (10 bản không lời):</label>
+            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách Tình Khúc Bất Hủ (Piano êm dịu):</label>
             <select
               value={currentTrackIndex}
               onChange={(e) => {

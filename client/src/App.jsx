@@ -6,12 +6,14 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import AlbumDetail from './pages/AlbumDetail';
 import ProtectedRoute from './components/ProtectedRoute';
+import BackgroundMusic from './components/BackgroundMusic';
 
 
 
 export default function App() {
   return (
     <Router>
+      <BackgroundMusic />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />

@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Danh sách 10 Tuyệt Phẩm Dương Cầm (Piano êm dịu, không lời, mượt mà, thư thái tuyệt đối, zero disco)
+// Danh sách 10 Tình Khúc Dương Cầm Êm Dịu Bất Hủ (Phục vụ trực tiếp từ máy cục bộ, 100% mượt mà, phát ngay lập tức)
 const PLAYLIST = [
-  { id: 1, title: 'Gymnopédie No. 1', artist: 'Erik Satie (Piano Êm Dịu)', src: 'https://upload.wikimedia.org/wikipedia/commons/3/34/Erik_Satie_-_gymnopedie_no_1.ogg' },
-  { id: 2, title: 'Clair de Lune', artist: 'Claude Debussy (Ánh Trăng Dương Cầm)', src: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Clair_de_lune_%2528Claude_Debussy%2529_Suite_bergamasque.ogg' },
-  { id: 3, title: 'Nocturne Op. 9 No. 2', artist: 'Frédéric Chopin (Dạ Khúc Bất Hủ)', src: 'https://upload.wikimedia.org/wikipedia/commons/7/73/Chopin_Nocturne_Op_9_No_2.ogg' },
-  { id: 4, title: 'Moonlight Sonata', artist: 'L.V. Beethoven (Soạn Khúc Ánh Trăng)', src: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/Beethoven_Moonlight_sonata_folder.ogg' },
-  { id: 5, title: 'Air on the G String', artist: 'J.S. Bach (Hòa Tấu Trầm Ấm)', src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Bach_Air_on_G_String.ogg' },
-  { id: 6, title: 'Prelude in C Major', artist: 'J.S. Bach (Dương Cầm Mượt Mà)', src: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Bach_BWV_846_prelude.ogg' },
-  { id: 7, title: 'Prelude in E Minor', artist: 'Frédéric Chopin (Tình Khúc Sâu Lắng)', src: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Chopin_Prelude_in_E_Minor_Op_28_No_4.ogg' },
-  { id: 8, title: 'Für Elise', artist: 'L.V. Beethoven (Dương Cầm Thư Giãn)', src: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Fur_Elise.ogg' },
-  { id: 9, title: 'Canon in D (Piano)', artist: 'Johann Pachelbel (Giai Điệu Hạnh Phúc)', src: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Pachelbel_Canon_in_D_Major.ogg' },
-  { id: 10, title: 'Relaxing Vintage Piano', artist: 'Hoài Niệm Chiều Thu', src: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3' }
+  { id: 1, title: 'Biển Tình', artist: 'Dương Cầm Êm Dịu', src: '/audio/track1.mp3' },
+  { id: 2, title: 'Dấu Tình Sương Gió', artist: 'Tình Khúc Dương Cầm', src: '/audio/track2.mp3' },
+  { id: 3, title: 'Bản Tình Ca Mùa Thu', artist: 'Piano Hòa Tấu Nhẹ Nhàng', src: '/audio/track3.mp3' },
+  { id: 4, title: 'Tháng Năm Rực Rỡ', artist: 'Acoustic Piano Ballad', src: '/audio/track4.mp3' },
+  { id: 5, title: 'Như Cánh Vạc Bay', artist: 'Giai Điệu Trầm Ấm', src: '/audio/track5.mp3' },
+  { id: 6, title: 'Tình Nhớ', artist: 'Dương Cầm Bình Yên', src: '/audio/track6.mp3' },
+  { id: 7, title: 'Mưa Trên Phố Huế', artist: 'Hòa Tấu Hoài Niệm', src: '/audio/track7.mp3' },
+  { id: 8, title: 'Tuổi Mộng Mơ', artist: 'Romantic Piano Melody', src: '/audio/track8.mp3' },
+  { id: 9, title: 'Biển Nhớ', artist: 'Tiếng Dương Cầm Thư Giãn', src: '/audio/track9.mp3' },
+  { id: 10, title: 'Gửi Người Em Gái', artist: 'Tình Khúc Bất Hủ', src: '/audio/track10.mp3' }
 ];
 
 const BackgroundMusic = () => {
@@ -166,7 +166,7 @@ const BackgroundMusic = () => {
               animation: isPlaying ? 'spin 4s linear infinite' : 'none',
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
             }}
-            title="Nhấp để mở Radio Dương Cầm Êm Dịu đầy đủ"
+            title="Nhấp để mở Radio Tình Khúc Bất Hủ đầy đủ"
           >
             📻
           </div>
@@ -224,7 +224,7 @@ const BackgroundMusic = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed var(--light-brown)', paddingBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '20px' }}>📻</span>
-              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Dương Cầm Êm Dịu</span>
+              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Tình Khúc Bất Hủ</span>
             </div>
             <button 
               onClick={() => setIsExpanded(false)} 
@@ -289,7 +289,7 @@ const BackgroundMusic = () => {
 
           {/* Danh sách 10 bản nhạc */}
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách Tuyệt Phẩm Dương Cầm (Không lời êm dịu):</label>
+            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách Tình Khúc Bất Hủ (Piano êm dịu):</label>
             <select
               value={currentTrackIndex}
               onChange={(e) => {

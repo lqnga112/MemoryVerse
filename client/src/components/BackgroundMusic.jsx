@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Danh sách 10 Tuyệt Phẩm Nhạc Cổ Điển Dương Cầm Bất Hủ Chuẩn Quốc Tế 100%
+// Danh sách 10 Tuyệt Phẩm Nhạc Cổ Điển Dương Cầm Bất Hủ Chuẩn Quốc Tế (10 tệp âm thanh MP3 độc lập)
 const PLAYLIST = [
   { id: 1, title: 'Gymnopédie No. 1', artist: 'Erik Satie (Piano Êm Dịu)', src: '/audio/track1.mp3' },
   { id: 2, title: 'Clair de Lune', artist: 'Claude Debussy (Ánh Trăng Dương Cầm)', src: '/audio/track2.mp3' },
@@ -8,7 +8,7 @@ const PLAYLIST = [
   { id: 4, title: 'Moonlight Sonata (Adagio)', artist: 'Ludwig van Beethoven (Soạn Khúc Ánh Trăng)', src: '/audio/track4.mp3' },
   { id: 5, title: 'Für Elise', artist: 'Ludwig van Beethoven (Dương Cầm Thư Giãn)', src: '/audio/track5.mp3' },
   { id: 6, title: 'Canon in D Major (Piano)', artist: 'Johann Pachelbel (Giai Điệu Hạnh Phúc)', src: '/audio/track6.mp3' },
-  { id: 7, title: 'Air on the G String', artist: 'Johann Sebastian Bach (Hòa Tấu Trầm Ấm)', src: '/audio/track2.mp3' },
+  { id: 7, title: 'Air on the G String', artist: 'Johann Sebastian Bach (Hòa Tấu Trầm Ấm)', src: '/audio/track7.mp3' },
   { id: 8, title: 'Prelude in C Major (BWV 846)', artist: 'Johann Sebastian Bach (Dương Cầm Mượt Mà)', src: '/audio/track8.mp3' },
   { id: 9, title: 'Prelude in E Minor (Op. 28 No. 4)', artist: 'Frédéric Chopin (Tình Khúc Sâu Lắng)', src: '/audio/track9.mp3' },
   { id: 10, title: 'Liebestraum No. 3 (Love Dream)', artist: 'Franz Liszt (Giấc Mơ Tình Yêu)', src: '/audio/track10.mp3' }

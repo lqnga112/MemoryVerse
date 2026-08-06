@@ -1,0 +1,13 @@
+Line 146: <<vì sao chọn đề tài này mà không chọn đề tài khác???>
+Line 149: <<Liệt kê các tiêu chí kết quả cần đạt được trong dự án>>
+Line 154: <<danh sách các thành viên tham gia làm dự án, ghi rõ vai trò của từng thành viên trong dự án, ghi giống phiếu đăng ký đề tài>>
+Line 159: <<SV sử dụng công cụ gì để làm ra sản phẩm thì liệt kê ra đây (có thể đưa logo vào cho sinh động, vd: android studio, vs code....>>
+Line 163: <<VD: Mongodb, firebase.... >>
+Line 218: <<phân tích điểm mạnh, điểm yếu, cơ hội, thách thức của đề tài đã lựa chọn theo mô hình SWOT>>
+Line 222: <<tham khảo phần đối tượng sử dụng ở trên để liệt kê danh sách actor (đối tác động đến hệ thống: con người, hệ thống khác như ngân hàng, cổng thanh toán...) >>
+Line 228: <<Liệt kê tên các use case, sử dụng động từ để đặt tên>>
+Line 231: <<Vẽ sơ đồ use case, vd sử dụng công cụ draw.io hoặc các công cụ vẽ khác để vẽ. Vẽ sơ đồ tổng quát và sơ đồ chi tiết theo từng use case, không vẽ chi tiết theo tác nhân>>
+Line 261: << Bảng này dùng liệt kê danh sách nhóm đối tượng người dùng và được phép sử dụng chức năng nào trên phần mềm thì SV liệt kê vào đây>>
+Line 286: <<SV vẽ sơ đồ hoạt động hoặc sơ đồ workflow của ứng dụng, >>
+Line 355: Bước 2: Cài đặt và cấu hình Backend (Server): Mở thư mục server bằng lệnhcd serverchạy lệnhnpm installđể tải các gói phụ thuộc. Đổi tên tệp '.env.example' thành '.env' và cấu hình các giá trị bao gồm: PORT=5000, MONGODB_URI=mongodb://localhost:27017/family_db, JWT_SECRET=your_secret_key, và GEMINI_API_KEY=key_api_gemini_cua_ban. Khởi chạy backend bằng lệnh:npm run dev
+Line 383: <Sinh viên lập bảng ghi rõ chức năng đã hoàn thành, chưa hoàn thành, đánh giá tỉ lệ % hoàn thành>

@@ -29,7 +29,7 @@ const AlbumDetail = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   
-  // Family Tree Editable State (saved to LocalStorage per album/journey as an array)
+  // Family Tree Draggable State (saved to LocalStorage per album/journey as an array)
   const [familyMembers, setFamilyMembers] = useState(() => {
     const saved = localStorage.getItem('family_' + id);
     if (saved) {
@@ -41,24 +41,39 @@ const AlbumDetail = () => {
       }
     }
     return [
-      { id: '1', name: 'Nguyễn Văn Bình', year: '1952', role: 'Ông Ngoại', parentId: null },
-      { id: '2', name: 'Trần Thị Lan', year: '1956', role: 'Bà Ngoại', parentId: null },
-      { id: '3', name: 'Nguyễn Bình Minh', year: '1980', role: 'Con Trai Cả', parentId: '1' },
-      { id: '4', name: 'Nguyễn Lan Anh', year: '1985', role: 'Con Gái Út', parentId: '1' }
+      { id: '1', name: 'Nguyễn Văn Quân', year: '1920', role: 'Cụ Ông', x: 150, y: 50, connections: ['2', '3'] },
+      { id: '2', name: 'Trần Thị Én', year: '1925', role: 'Cụ Bà', x: 400, y: 50, connections: [] },
+      { id: '3', name: 'Nguyễn Văn Lửa', year: '1952', role: 'Ông Nội', x: 275, y: 220, connections: ['4'] },
+      { id: '4', name: 'Hoàng Thị Ngần', year: '1956', role: 'Bà Nội', x: 520, y: 220, connections: [] }
     ];
   });
+
+  const [draggingNodeId, setDraggingNodeId] = useState(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   const addMember = (parentId = null) => {
     const newMember = {
       id: Date.now().toString(),
       name: 'Thành viên mới',
       year: '1990',
-      role: parentId ? 'Con' : 'Thế hệ đầu',
-      parentId: parentId
+      role: parentId ? 'Con' : 'Thành viên mới',
+      parentId: parentId,
+      x: parentId ? 275 : 100,
+      y: parentId ? 350 : 100,
+      connections: []
     };
-    const updated = [...familyMembers, newMember];
-    setFamilyMembers(updated);
-    localStorage.setItem('family_' + id, JSON.stringify(updated));
+    
+    // Automatically link parent to child
+    const updated = familyMembers.map(m => {
+      if (parentId && m.id === parentId) {
+        return { ...m, connections: [...(m.connections || []), newMember.id] };
+      }
+      return m;
+    });
+
+    const finalUpdated = [...updated, newMember];
+    setFamilyMembers(finalUpdated);
+    localStorage.setItem('family_' + id, JSON.stringify(finalUpdated));
   };
 
   const updateMember = (memberId, field, value) => {
@@ -70,23 +85,67 @@ const AlbumDetail = () => {
   };
 
   const deleteMember = (memberId) => {
-    if (!window.confirm('Bạn có chắc muốn xóa thành viên này và toàn bộ con cháu của họ?')) return;
-    
-    const getDescendantIds = (parentId) => {
-      let ids = [];
-      const children = familyMembers.filter(m => m.parentId === parentId);
-      children.forEach(c => {
-        ids.push(c.id);
-        ids = [...ids, ...getDescendantIds(c.id)];
-      });
-      return ids;
-    };
-
-    const toDelete = [memberId, ...getDescendantIds(memberId)];
-    const updated = familyMembers.filter(m => !toDelete.includes(m.id));
+    if (!window.confirm('Bạn có chắc muốn xóa thành viên này?')) return;
+    const updated = familyMembers.filter(m => m.id !== memberId).map(m => {
+      // Remove any connections to this node
+      return {
+        ...m,
+        connections: (m.connections || []).filter(cId => cId !== memberId)
+      };
+    });
     setFamilyMembers(updated);
     localStorage.setItem('family_' + id, JSON.stringify(updated));
   };
+
+  const linkMember = (fromId, toId) => {
+    if (fromId === toId) return;
+    const updated = familyMembers.map(m => {
+      if (m.id === fromId) {
+        const existing = m.connections || [];
+        if (existing.includes(toId)) {
+          // Remove link if already exists (toggle link)
+          return { ...m, connections: existing.filter(id => id !== toId) };
+        }
+        return { ...m, connections: [...existing, toId] };
+      }
+      return m;
+    });
+    setFamilyMembers(updated);
+    localStorage.setItem('family_' + id, JSON.stringify(updated));
+  };
+
+  const handleMouseDown = (e, nodeId) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT') return;
+    setDraggingNodeId(nodeId);
+    const node = familyMembers.find(n => n.id === nodeId);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!draggingNodeId) return;
+    const containerRect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - containerRect.left - dragOffset.x;
+    const y = e.clientY - containerRect.top - dragOffset.y;
+
+    const cleanX = Math.max(10, Math.min(x, containerRect.width - 200));
+    const cleanY = Math.max(10, Math.min(y, containerRect.height - 200));
+
+    setFamilyMembers(prev => prev.map(n => 
+      n.id === draggingNodeId ? { ...n, x: cleanX, y: cleanY } : n
+    ));
+  };
+
+  const handleMouseUp = () => {
+    if (draggingNodeId) {
+      setDraggingNodeId(null);
+      localStorage.setItem('family_' + id, JSON.stringify(familyMembers));
+    }
+  };
+
   const [isChatting, setIsChatting] = useState(false);
 
   const recognitionRef = useRef(null);
@@ -124,6 +183,63 @@ const AlbumDetail = () => {
       };
     }
   }, [id]);
+
+  useEffect(() => {
+    if (activeTab !== 'map' || !window.L) return;
+
+    // Khởi tạo bản đồ thế giới Leaflet
+    const map = window.L.map('map-canvas').setView([16.047, 108.206], 6);
+
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markersGroup = window.L.featureGroup().addTo(map);
+
+    memories.forEach(m => {
+      if (m.location) {
+        let lat = 16.047, lng = 108.206; 
+        const loc = m.location.toLowerCase();
+        if (loc.includes('hà nội') || loc.includes('hn')) { lat = 21.0285; lng = 105.8542; }
+        else if (loc.includes('hồ chí minh') || loc.includes('sài gòn') || loc.includes('hcm')) { lat = 10.8231; lng = 106.6297; }
+        else if (loc.includes('nam định') || loc.includes('nđ')) { lat = 20.4312; lng = 106.1834; }
+        else if (loc.includes('hải phòng') || loc.includes('hp')) { lat = 20.8449; lng = 106.6881; }
+        else if (loc.includes('đà nẵng') || loc.includes('đn')) { lat = 16.0544; lng = 108.2022; }
+        else if (loc.includes('huế')) { lat = 16.4637; lng = 107.5909; }
+        else if (loc.includes('nha trang')) { lat = 12.2388; lng = 109.1967; }
+        else if (loc.includes('đà lạt')) { lat = 11.9404; lng = 108.4583; }
+        else if (loc.includes('cần thơ')) { lat = 10.0452; lng = 105.7469; }
+        else {
+          lat = 10 + Math.random() * 11;
+          lng = 103 + Math.random() * 6;
+        }
+
+        window.L.marker([lat, lng])
+          .addTo(markersGroup)
+          .bindPopup(`<b>${m.location}</b><br/>${m.title || 'Kỷ niệm'}`);
+      }
+    });
+
+    if (markersGroup.getBounds().isValid()) {
+      map.fitBounds(markersGroup.getBounds(), { padding: [50, 50] });
+    }
+
+    // Cho phép click vào bất kỳ đâu trên bản đồ thế giới để ghim
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+      const name = prompt("Nhập tên địa danh bạn muốn ghim tại đây:");
+      if (name) {
+        window.L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(`<b>${name}</b><br/>Ghim tự tạo trên bản đồ thế giới`)
+          .openPopup();
+      }
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, [activeTab, memories]);
 
   const fetchMemories = async () => {
     try {
@@ -300,76 +416,7 @@ const AlbumDetail = () => {
     }
   };
 
-  const renderTree = (parentId = null) => {
-    const nodes = familyMembers.filter(m => m.parentId === parentId);
-    if (nodes.length === 0) return null;
 
-    return (
-      <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap', width: '100%' }}>
-        {nodes.map(node => (
-          <div key={node.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            {/* Card member */}
-            <div style={{ 
-              padding: '16px', 
-              background: '#FAF6F0', 
-              border: '2px solid var(--primary-brown)', 
-              borderRadius: '12px', 
-              width: '190px', 
-              boxShadow: 'var(--shadow-soft)',
-              position: 'relative',
-              zIndex: 5
-            }}>
-              {/* Action Delete */}
-              <button 
-                onClick={() => deleteMember(node.id)}
-                style={{ position: 'absolute', top: '4px', right: '4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '10px' }}
-                title="Xóa thành viên"
-              >
-                ❌
-              </button>
-
-              <input 
-                type="text" 
-                value={node.role} 
-                onChange={e => updateMember(node.id, 'role', e.target.value)} 
-                style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
-              />
-              <input 
-                type="text" 
-                value={node.name} 
-                onChange={e => updateMember(node.id, 'name', e.target.value)} 
-                style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
-                placeholder="Tên thành viên..."
-              />
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                <span>Sinh năm:</span>
-                <input 
-                  type="text" 
-                  value={node.year} 
-                  onChange={e => updateMember(node.id, 'year', e.target.value)} 
-                  style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
-                />
-              </div>
-
-              {/* Action Add Child */}
-              <button 
-                onClick={() => addMember(node.id)}
-                style={{ marginTop: '12px', width: '100%', fontSize: '11px', background: 'var(--primary-brown)', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ➕ Thêm con
-              </button>
-            </div>
-
-            {/* Render line and children */}
-            {familyMembers.some(m => m.parentId === node.id) && (
-              <div style={{ width: '2px', height: '20px', background: 'var(--primary-brown)', zIndex: 1 }}></div>
-            )}
-            {renderTree(node.id)}
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   if (loading) return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>Đang tải...</div>;
 
@@ -427,7 +474,7 @@ const AlbumDetail = () => {
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(168, 139, 119, 0.2)', paddingTop: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
           <p>Hành trình lưu giữ bởi</p>
-          <p style={{ fontWeight: 'bold', color: 'var(--primary-brown)' }}>MemoryVerse AI</p>
+          <p style={{ fontWeight: 'bold', color: 'var(--primary-brown)' }}>MemoryVerse</p>
         </div>
       </aside>
 
@@ -526,28 +573,145 @@ const AlbumDetail = () => {
           )}
 
           {activeTab === 'family' && (
-            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(168, 139, 119, 0.15)', paddingBottom: '16px' }}>
+            <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ textAlign: 'left' }}>
-                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình</h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Phả hệ các thế hệ liên quan đến {album?.title} (Nhấp trực tiếp vào chữ để sửa đổi)</p>
+                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình (Bảng Kéo Thả)</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Kéo các thẻ để di chuyển vị trí, nhấp trực tiếp để sửa thông tin và liên kết các thành viên.</p>
                 </div>
                 <button 
                   onClick={() => addMember(null)} 
                   className="btn-primary"
                   style={{ fontSize: '13px', padding: '8px 16px' }}
                 >
-                  ➕ Thêm Người Sáng Lập
+                  ➕ Thêm Thành Viên Gốc
                 </button>
               </div>
 
-              {/* Render dynamic tree */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'auto', padding: '20px 0' }}>
-                {familyMembers.filter(m => m.parentId === null).length === 0 ? (
-                  <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>Chưa có thành viên nào. Hãy bấm "Thêm Người Sáng Lập" để bắt đầu.</p>
-                ) : (
-                  renderTree(null)
-                )}
+              {/* Workspace Board */}
+              <div 
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                style={{ 
+                  position: 'relative', 
+                  width: '100%', 
+                  height: '600px', 
+                  background: '#FAF6EE', 
+                  border: '1px solid rgba(168, 139, 119, 0.25)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  backgroundImage: 'radial-gradient(rgba(141, 110, 99, 0.12) 1.5px, transparent 1.5px)',
+                  backgroundSize: '20px 20px',
+                  userSelect: 'none',
+                  cursor: draggingNodeId ? 'grabbing' : 'default'
+                }}
+              >
+                {/* Connection lines SVG overlay */}
+                <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}>
+                  {familyMembers.map(node => 
+                    (node.connections || []).map(targetId => {
+                      const target = familyMembers.find(n => n.id === targetId);
+                      if (!target) return null;
+                      // Midpoints of cards (width: 190, height: 160)
+                      const x1 = (node.x || 100) + 95;
+                      const y1 = (node.y || 100) + 80;
+                      const x2 = (target.x || 100) + 95;
+                      const y2 = (target.y || 100) + 80;
+                      return (
+                        <path
+                          key={`${node.id}-${target.id}`}
+                          d={`M ${x1} ${y1} C ${(x1+x2)/2} ${y1}, ${(x1+x2)/2} ${y2}, ${x2} ${y2}`}
+                          fill="none"
+                          stroke="var(--primary-brown)"
+                          strokeWidth="2.5"
+                          strokeDasharray="6 4"
+                        />
+                      );
+                    })
+                  )}
+                </svg>
+
+                {/* Member Cards */}
+                {familyMembers.map(node => (
+                  <div
+                    key={node.id}
+                    onMouseDown={(e) => handleMouseDown(e, node.id)}
+                    style={{
+                      position: 'absolute',
+                      left: `${node.x || 100}px`,
+                      top: `${node.y || 100}px`,
+                      width: '190px',
+                      background: '#FAF6F0',
+                      border: '2px solid var(--primary-brown)',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      boxShadow: '0 4px 12px rgba(78, 52, 46, 0.1)',
+                      zIndex: draggingNodeId === node.id ? 100 : 10,
+                      cursor: draggingNodeId === node.id ? 'grabbing' : 'grab',
+                      transition: draggingNodeId === node.id ? 'none' : 'transform 0.1s ease'
+                    }}
+                  >
+                    {/* Delete button */}
+                    <button
+                      type="button"
+                      onClick={() => deleteMember(node.id)}
+                      style={{ position: 'absolute', top: '4px', right: '4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '10px' }}
+                    >
+                      ❌
+                    </button>
+
+                    <input 
+                      type="text" 
+                      value={node.role || ''} 
+                      onChange={e => updateMember(node.id, 'role', e.target.value)} 
+                      style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
+                      placeholder="VAI TRÒ"
+                    />
+                    
+                    <input 
+                      type="text" 
+                      value={node.name || ''} 
+                      onChange={e => updateMember(node.id, 'name', e.target.value)} 
+                      style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '15px', color: 'var(--text-primary)', outline: 'none', margin: '4px 0' }}
+                      placeholder="Tên thành viên..."
+                    />
+
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                      <span>Sinh năm:</span>
+                      <input 
+                        type="text" 
+                        value={node.year || ''} 
+                        onChange={e => updateMember(node.id, 'year', e.target.value)} 
+                        style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '45px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => addMember(node.id)}
+                      style={{ width: '100%', background: 'var(--primary-brown)', color: 'white', border: 'none', borderRadius: '4px', padding: '4px', fontSize: '10px', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                      ➕ Thêm con liên kết
+                    </button>
+
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          linkMember(node.id, e.target.value);
+                          e.target.value = "";
+                        }
+                      }}
+                      style={{ width: '100%', marginTop: '6px', fontSize: '10px', padding: '2px', border: '1px solid rgba(168, 139, 119, 0.4)', borderRadius: '4px', outline: 'none', background: 'transparent', color: 'var(--text-secondary)' }}
+                    >
+                      <option value="">🔗 Nối / Hủy nối...</option>
+                      {familyMembers.filter(m => m.id !== node.id).map(m => (
+                        <option key={m.id} value={m.id}>Nối với {m.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -558,27 +722,8 @@ const AlbumDetail = () => {
               <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Các địa điểm gắn liền với kỷ niệm của {album?.title}</p>
               
               <div style={{ display: 'flex', gap: '24px', height: '400px' }}>
-                {/* Mock Map Panel */}
-                <div style={{ flex: 2, background: '#EAE6DF', borderRadius: '12px', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(168, 139, 119, 0.3)' }}>
-                  {/* Visual Map Grid Lines */}
-                  <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(var(--light-brown) 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.15 }}></div>
-                  
-                  {/* Interactive Pins */}
-                  <div style={{ position: 'absolute', top: '35%', left: '45%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
-                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
-                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Hà Nội</div>
-                  </div>
-
-                  <div style={{ position: 'absolute', top: '65%', left: '30%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
-                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
-                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Nam Định</div>
-                  </div>
-
-                  <div style={{ position: 'absolute', top: '50%', left: '70%', transform: 'translate(-50%, -50%)', cursor: 'pointer', textAlign: 'center' }}>
-                    <div style={{ fontSize: '28px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>📍</div>
-                    <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--primary-brown)' }}>Hải Phòng</div>
-                  </div>
-                </div>
+                {/* Real Leaflet Map Container */}
+                <div id="map-canvas" style={{ flex: 2, borderRadius: '12px', border: '1px solid rgba(168, 139, 119, 0.3)', zIndex: 5 }}></div>
 
                 {/* Location List Panel */}
                 <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>

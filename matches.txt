@@ -1,0 +1,9 @@
+Line 84: 6.3.1 Cài đặt môi trường phát triển (Local Development)
+Line 129: Mô hình ngôn ngữ lớn được huấn luyện trên lượng dữ liệu khổng lồ nhằm hiểu và sinh văn bản tự nhiên giống con người (như mô hình Gemini hay Ollama Vistral).
+Line 206: Tối ưu sâu ngôn ngữ tiếng Việt (bao gồm đọc chữ viết tay và giọng nói vùng miền). Khả năng chạy AI offline/local bảo mật dữ liệu tuyệt đối.
+Line 213: 4. Quản trị viên Hệ thống (System Administrator - The Operator): Đội ngũ kỹ sư vận hành hệ thống. Có nhiệm vụ giám sát dung lượng lưu trữ, theo dõi hiệu năng hoạt động của các dịch vụ AI offline (OCR, Speech-to-Text, LLM), bảo trì hệ thống và đảm bảo tính riêng tư, bảo mật an toàn thông tin dữ liệu cho mọi gia đình tham gia sử dụng.
+Line 309: |      MongoDB Local          | |     (Google Gemini API)    |
+Line 352: Để chạy ứng dụng MemoryVerse dưới môi trường máy tính cá nhân local, thực hiện theo các bước sau:
+Line 354: Bước 2: Cài đặt và cấu hình Backend (Server): Mở thư mục server bằng lệnhcd serverchạy lệnhnpm installđể tải các gói phụ thuộc. Đổi tên tệp '.env.example' thành '.env' và cấu hình các giá trị bao gồm: PORT=5000, MONGODB_URI=mongodb://localhost:27017/family_db, JWT_SECRET=your_secret_key, và GEMINI_API_KEY=key_api_gemini_cua_ban. Khởi chạy backend bằng lệnh:npm run dev
+Line 355: Bước 3: Cài đặt và cấu hình Frontend (Client): Mở thư mục client bằng lệnhcd clientchạy lệnhnpm installKhởi chạy ứng dụng Frontend React bằng lệnh:npm run devTruy cập liên kết http://localhost:5173 trên trình duyệt để kiểm tra giao diện.
+Line 362: Địa chỉ Website hoạt động: Địa chỉ Website triển khai thử nghiệm: http://memoryverse.id.vn (Hoặc truy cập trực tiếp địa chỉ Localhost: http://localhost:5173 trong quá trình thử nghiệm đánh giá chấm điểm đề tài).

@@ -1,23 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Nunito:wght@400;600;700&display=swap');
 
 :root {
-  /* Nền siêu sạch, ngả chút ấm (Warm Off-white) */
-  --bg-dark: #FCFBF9; 
-  --bg-card: #FFFFFF; 
+  /* Tông màu kem ấm hoài cổ đậm đà (Warm Vintage Cream & Paper) */
+  --bg-dark: #F3ECE0; 
+  --bg-card: #FAF6EE; 
   
-  /* Bảng màu Nâu Sang trọng (Elegant Brown) */
-  --primary-brown: #5C3A21; 
-  --light-brown: #A88B77; 
-  --accent-gold: #C29A62; 
+  /* Bảng màu Nâu Đất & Đồng Cổ (Vintage Sepia & Brass) */
+  --primary-brown: #4E342E; 
+  --light-brown: #8D6E63; 
+  --accent-gold: #B18A47; 
   
-  --text-primary: #2C1B10; 
-  --text-secondary: #705A49; 
+  --text-primary: #3E2723; 
+  --text-secondary: #6D4C41; 
   
-  --radius-sm: 6px;
-  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
   
-  /* Bóng đổ mượt mà, không bị gắt */
-  --shadow-soft: 0 4px 20px rgba(92, 58, 33, 0.06); 
+  /* Bóng đổ mượt mà ấm áp */
+  --shadow-soft: 0 8px 32px rgba(78, 52, 46, 0.08); 
   
   /* Font chữ */
   --font-heading: 'Merriweather', serif; 
@@ -30,20 +30,24 @@
   padding: 0;
 }
 
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-dark);
   color: var(--text-primary);
-  min-height: 100vh;
   line-height: 1.6;
 }
 
-/* Kiểu dáng Thẻ (Card) */
+/* Kiểu dáng Thẻ (Card) phong cách sách cổ */
 .glass-card {
   background: var(--bg-card);
-  border: 1px solid rgba(168, 139, 119, 0.15);
+  border: 3px double rgba(141, 110, 99, 0.4);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 28px;
   box-shadow: var(--shadow-soft);
   transition: all 0.3s ease;
 }

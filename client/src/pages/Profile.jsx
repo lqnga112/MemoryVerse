@@ -189,7 +189,14 @@ const Profile = () => {
 
                 <div className="album-cover">
                   {album.coverImage ? (
-                    <img src={`http://localhost:5000${album.coverImage}`} alt="Cover" />
+                    <img 
+                      src={`http://localhost:5000${album.coverImage}`} 
+                      alt="Cover" 
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentNode.innerHTML = '<span style="opacity: 0.5; font-size: 32px;">📁</span>';
+                      }}
+                    />
                   ) : (
                     <span style={{ opacity: 0.5, fontSize: '32px' }}>📁</span>
                   )}

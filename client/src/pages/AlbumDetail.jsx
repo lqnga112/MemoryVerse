@@ -29,25 +29,61 @@ const AlbumDetail = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   
-  // Family Tree Editable State (saved to LocalStorage per album/journey)
+  // Family Tree Editable State (saved to LocalStorage per album/journey as an array)
   const [familyMembers, setFamilyMembers] = useState(() => {
     const saved = localStorage.getItem('family_' + id);
-    return saved ? JSON.parse(saved) : {
-      gf: { name: 'Nguyễn Văn Bình', year: '1952', role: 'Ông nội / Ông ngoại' },
-      gm: { name: 'Trần Thị Lan', year: '1956', role: 'Bà nội / Bà ngoại' },
-      c1: { name: 'Nguyễn Bình Minh', year: '1980', role: 'Con trai cả' },
-      c2: { name: 'Nguyễn Lan Anh', year: '1985', role: 'Con gái út' }
-    };
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [
+      { id: '1', name: 'Nguyễn Văn Bình', year: '1952', role: 'Ông Ngoại', parentId: null },
+      { id: '2', name: 'Trần Thị Lan', year: '1956', role: 'Bà Ngoại', parentId: null },
+      { id: '3', name: 'Nguyễn Bình Minh', year: '1980', role: 'Con Trai Cả', parentId: '1' },
+      { id: '4', name: 'Nguyễn Lan Anh', year: '1985', role: 'Con Gái Út', parentId: '1' }
+    ];
   });
 
-  const updateMember = (key, field, value) => {
-    const updated = {
-      ...familyMembers,
-      [key]: {
-        ...familyMembers[key],
-        [field]: value
-      }
+  const addMember = (parentId = null) => {
+    const newMember = {
+      id: Date.now().toString(),
+      name: 'Thành viên mới',
+      year: '1990',
+      role: parentId ? 'Con' : 'Thế hệ đầu',
+      parentId: parentId
     };
+    const updated = [...familyMembers, newMember];
+    setFamilyMembers(updated);
+    localStorage.setItem('family_' + id, JSON.stringify(updated));
+  };
+
+  const updateMember = (memberId, field, value) => {
+    const updated = familyMembers.map(m => 
+      m.id === memberId ? { ...m, [field]: value } : m
+    );
+    setFamilyMembers(updated);
+    localStorage.setItem('family_' + id, JSON.stringify(updated));
+  };
+
+  const deleteMember = (memberId) => {
+    if (!window.confirm('Bạn có chắc muốn xóa thành viên này và toàn bộ con cháu của họ?')) return;
+    
+    const getDescendantIds = (parentId) => {
+      let ids = [];
+      const children = familyMembers.filter(m => m.parentId === parentId);
+      children.forEach(c => {
+        ids.push(c.id);
+        ids = [...ids, ...getDescendantIds(c.id)];
+      });
+      return ids;
+    };
+
+    const toDelete = [memberId, ...getDescendantIds(memberId)];
+    const updated = familyMembers.filter(m => !toDelete.includes(m.id));
     setFamilyMembers(updated);
     localStorage.setItem('family_' + id, JSON.stringify(updated));
   };
@@ -262,6 +298,75 @@ const AlbumDetail = () => {
     } finally {
       setIsChatting(false);
     }
+  const renderTree = (parentId = null) => {
+    const nodes = familyMembers.filter(m => m.parentId === parentId);
+    if (nodes.length === 0) return null;
+
+    return (
+      <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap', width: '100%' }}>
+        {nodes.map(node => (
+          <div key={node.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            {/* Card member */}
+            <div style={{ 
+              padding: '16px', 
+              background: '#FAF6F0', 
+              border: '2px solid var(--primary-brown)', 
+              borderRadius: '12px', 
+              width: '190px', 
+              boxShadow: 'var(--shadow-soft)',
+              position: 'relative',
+              zIndex: 5
+            }}>
+              {/* Action Delete */}
+              <button 
+                onClick={() => deleteMember(node.id)}
+                style={{ position: 'absolute', top: '4px', right: '4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '10px' }}
+                title="Xóa thành viên"
+              >
+                ❌
+              </button>
+
+              <input 
+                type="text" 
+                value={node.role} 
+                onChange={e => updateMember(node.id, 'role', e.target.value)} 
+                style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
+              />
+              <input 
+                type="text" 
+                value={node.name} 
+                onChange={e => updateMember(node.id, 'name', e.target.value)} 
+                style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
+                placeholder="Tên thành viên..."
+              />
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                <span>Sinh năm:</span>
+                <input 
+                  type="text" 
+                  value={node.year} 
+                  onChange={e => updateMember(node.id, 'year', e.target.value)} 
+                  style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
+                />
+              </div>
+
+              {/* Action Add Child */}
+              <button 
+                onClick={() => addMember(node.id)}
+                style={{ marginTop: '12px', width: '100%', fontSize: '11px', background: 'var(--primary-brown)', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ➕ Thêm con
+              </button>
+            </div>
+
+            {/* Render line and children */}
+            {familyMembers.some(m => m.parentId === node.id) && (
+              <div style={{ width: '2px', height: '20px', background: 'var(--primary-brown)', zIndex: 1 }}></div>
+            )}
+            {renderTree(node.id)}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   if (loading) return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>Đang tải...</div>;
@@ -420,127 +525,27 @@ const AlbumDetail = () => {
 
           {activeTab === 'family' && (
             <div style={{ padding: '24px', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 139, 119, 0.15)', boxShadow: 'var(--shadow-soft)', textAlign: 'center' }}>
-              <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--primary-brown)' }}>🌳 Sơ Đồ Gia Đình</h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Phả hệ các thế hệ liên quan đến {album?.title} (Nhấp trực tiếp vào chữ để sửa đổi)</p>
-              
-              {/* CSS Family Tree layout */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '32px' }}>
-                {/* Generation 1: Ancestors */}
-                <div style={{ display: 'flex', gap: '24px' }}>
-                  {/* Grandfather */}
-                  <div style={{ padding: '16px', background: '#FAF6F0', border: '2px solid var(--primary-brown)', borderRadius: '12px', width: '190px' }}>
-                    <input 
-                      type="text" 
-                      value={familyMembers.gf.role} 
-                      onChange={e => updateMember('gf', 'role', e.target.value)} 
-                      style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
-                    />
-                    <input 
-                      type="text" 
-                      value={familyMembers.gf.name} 
-                      onChange={e => updateMember('gf', 'name', e.target.value)} 
-                      style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
-                      placeholder="Nhập tên ông..."
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                      <span>Sinh năm:</span>
-                      <input 
-                        type="text" 
-                        value={familyMembers.gf.year} 
-                        onChange={e => updateMember('gf', 'year', e.target.value)} 
-                        style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Grandmother */}
-                  <div style={{ padding: '16px', background: '#FAF6F0', border: '2px solid var(--primary-brown)', borderRadius: '12px', width: '190px' }}>
-                    <input 
-                      type="text" 
-                      value={familyMembers.gm.role} 
-                      onChange={e => updateMember('gm', 'role', e.target.value)} 
-                      style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
-                    />
-                    <input 
-                      type="text" 
-                      value={familyMembers.gm.name} 
-                      onChange={e => updateMember('gm', 'name', e.target.value)} 
-                      style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
-                      placeholder="Nhập tên bà..."
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                      <span>Sinh năm:</span>
-                      <input 
-                        type="text" 
-                        value={familyMembers.gm.year} 
-                        onChange={e => updateMember('gm', 'year', e.target.value)} 
-                        style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
-                      />
-                    </div>
-                  </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(168, 139, 119, 0.15)', paddingBottom: '16px' }}>
+                <div style={{ textAlign: 'left' }}>
+                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Phả hệ các thế hệ liên quan đến {album?.title} (Nhấp trực tiếp vào chữ để sửa đổi)</p>
                 </div>
+                <button 
+                  onClick={() => addMember(null)} 
+                  className="btn-primary"
+                  style={{ fontSize: '13px', padding: '8px 16px' }}
+                >
+                  ➕ Thêm Người Sáng Lập
+                </button>
+              </div>
 
-                {/* Connection line */}
-                <div style={{ width: '2px', height: '24px', background: 'var(--primary-brown)' }}></div>
-
-                {/* Generation 2: Children */}
-                <div style={{ display: 'flex', gap: '48px', position: 'relative' }}>
-                  {/* Child 1 */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ padding: '16px', background: '#FFFFFF', border: '1px solid rgba(168, 139, 119, 0.4)', borderRadius: '12px', width: '190px' }}>
-                      <input 
-                        type="text" 
-                        value={familyMembers.c1.role} 
-                        onChange={e => updateMember('c1', 'role', e.target.value)} 
-                        style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
-                      />
-                      <input 
-                        type="text" 
-                        value={familyMembers.c1.name} 
-                        onChange={e => updateMember('c1', 'name', e.target.value)} 
-                        style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
-                        placeholder="Nhập tên con..."
-                      />
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                        <span>Sinh năm:</span>
-                        <input 
-                          type="text" 
-                          value={familyMembers.c1.year} 
-                          onChange={e => updateMember('c1', 'year', e.target.value)} 
-                          style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Child 2 */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ padding: '16px', background: '#FFFFFF', border: '1px solid rgba(168, 139, 119, 0.4)', borderRadius: '12px', width: '190px' }}>
-                      <input 
-                        type="text" 
-                        value={familyMembers.c2.role} 
-                        onChange={e => updateMember('c2', 'role', e.target.value)} 
-                        style={{ border: 'none', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '11px', color: 'var(--light-brown)', outline: 'none', textTransform: 'uppercase' }}
-                      />
-                      <input 
-                        type="text" 
-                        value={familyMembers.c2.name} 
-                        onChange={e => updateMember('c2', 'name', e.target.value)} 
-                        style={{ border: 'none', borderBottom: '1px dashed var(--primary-brown)', background: 'transparent', textAlign: 'center', width: '100%', fontWeight: 'bold', fontSize: '16px', color: 'var(--text-primary)', outline: 'none', margin: '6px 0' }}
-                        placeholder="Nhập tên con..."
-                      />
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)' }}>
-                        <span>Sinh năm:</span>
-                        <input 
-                          type="text" 
-                          value={familyMembers.c2.year} 
-                          onChange={e => updateMember('c2', 'year', e.target.value)} 
-                          style={{ border: 'none', borderBottom: '1px dashed var(--light-brown)', background: 'transparent', textAlign: 'center', width: '50px', fontSize: '11px', color: 'var(--text-secondary)', outline: 'none' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Render dynamic tree */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'auto', padding: '20px 0' }}>
+                {familyMembers.filter(m => m.parentId === null).length === 0 ? (
+                  <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>Chưa có thành viên nào. Hãy bấm "Thêm Người Sáng Lập" để bắt đầu.</p>
+                ) : (
+                  renderTree(null)
+                )}
               </div>
             </div>
           )}

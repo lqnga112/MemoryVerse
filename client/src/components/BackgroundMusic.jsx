@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Danh sách 10 Tình Khúc Dương Cầm Êm Dịu Bất Hủ (Phục vụ trực tiếp từ máy cục bộ, 100% mượt mà, phát ngay lập tức)
+// Danh sách 10 Tuyệt Phẩm Nhạc Cổ Điển Dương Cầm Bất Hủ Chuẩn Quốc Tế 100%
 const PLAYLIST = [
-  { id: 1, title: 'Biển Tình', artist: 'Dương Cầm Êm Dịu', src: '/audio/track1.mp3' },
-  { id: 2, title: 'Dấu Tình Sương Gió', artist: 'Tình Khúc Dương Cầm', src: '/audio/track2.mp3' },
-  { id: 3, title: 'Bản Tình Ca Mùa Thu', artist: 'Piano Hòa Tấu Nhẹ Nhàng', src: '/audio/track3.mp3' },
-  { id: 4, title: 'Tháng Năm Rực Rỡ', artist: 'Acoustic Piano Ballad', src: '/audio/track4.mp3' },
-  { id: 5, title: 'Như Cánh Vạc Bay', artist: 'Giai Điệu Trầm Ấm', src: '/audio/track5.mp3' },
-  { id: 6, title: 'Tình Nhớ', artist: 'Dương Cầm Bình Yên', src: '/audio/track6.mp3' },
-  { id: 7, title: 'Mưa Trên Phố Huế', artist: 'Hòa Tấu Hoài Niệm', src: '/audio/track7.mp3' },
-  { id: 8, title: 'Tuổi Mộng Mơ', artist: 'Romantic Piano Melody', src: '/audio/track8.mp3' },
-  { id: 9, title: 'Biển Nhớ', artist: 'Tiếng Dương Cầm Thư Giãn', src: '/audio/track9.mp3' },
-  { id: 10, title: 'Gửi Người Em Gái', artist: 'Tình Khúc Bất Hủ', src: '/audio/track10.mp3' }
+  { id: 1, title: 'Gymnopédie No. 1', artist: 'Erik Satie (Piano Êm Dịu)', src: '/audio/track1.mp3' },
+  { id: 2, title: 'Clair de Lune', artist: 'Claude Debussy (Ánh Trăng Dương Cầm)', src: '/audio/track2.mp3' },
+  { id: 3, title: 'Nocturne Op. 9 No. 2', artist: 'Frédéric Chopin (Dạ Khúc Bất Hủ)', src: '/audio/track3.mp3' },
+  { id: 4, title: 'Moonlight Sonata (Adagio)', artist: 'Ludwig van Beethoven (Soạn Khúc Ánh Trăng)', src: '/audio/track4.mp3' },
+  { id: 5, title: 'Für Elise', artist: 'Ludwig van Beethoven (Dương Cầm Thư Giãn)', src: '/audio/track5.mp3' },
+  { id: 6, title: 'Canon in D Major (Piano)', artist: 'Johann Pachelbel (Giai Điệu Hạnh Phúc)', src: '/audio/track6.mp3' },
+  { id: 7, title: 'Air on the G String', artist: 'Johann Sebastian Bach (Hòa Tấu Trầm Ấm)', src: '/audio/track2.mp3' },
+  { id: 8, title: 'Prelude in C Major (BWV 846)', artist: 'Johann Sebastian Bach (Dương Cầm Mượt Mà)', src: '/audio/track8.mp3' },
+  { id: 9, title: 'Prelude in E Minor (Op. 28 No. 4)', artist: 'Frédéric Chopin (Tình Khúc Sâu Lắng)', src: '/audio/track9.mp3' },
+  { id: 10, title: 'Liebestraum No. 3 (Love Dream)', artist: 'Franz Liszt (Giấc Mơ Tình Yêu)', src: '/audio/track10.mp3' }
 ];
 
 const BackgroundMusic = () => {
@@ -21,7 +21,6 @@ const BackgroundMusic = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
 
   const audioRef = useRef(null);
   const currentTrack = PLAYLIST[currentTrackIndex];
@@ -32,13 +31,12 @@ const BackgroundMusic = () => {
     }
   }, [volume]);
 
-  // Tự động kích hoạt khi người dùng click chuột lần đầu
+  // Tự động phát khi người dùng nhấp vào trang lần đầu tiên
   useEffect(() => {
     const handleFirstInteraction = () => {
       if (audioRef.current && !isPlaying) {
         audioRef.current.play().then(() => {
           setIsPlaying(true);
-          setLoadError(false);
         }).catch(err => {
           console.log("Autoplay blocked:", err);
         });
@@ -60,7 +58,6 @@ const BackgroundMusic = () => {
     } else {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-        setLoadError(false);
       }).catch(err => {
         console.error("Playback error:", err);
       });
@@ -71,7 +68,6 @@ const BackgroundMusic = () => {
     const nextIdx = (currentTrackIndex + 1) % PLAYLIST.length;
     setCurrentTrackIndex(nextIdx);
     setIsPlaying(true);
-    setLoadError(false);
     setTimeout(() => {
       if (audioRef.current) audioRef.current.play();
     }, 100);
@@ -81,7 +77,6 @@ const BackgroundMusic = () => {
     const prevIdx = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
     setCurrentTrackIndex(prevIdx);
     setIsPlaying(true);
-    setLoadError(false);
     setTimeout(() => {
       if (audioRef.current) audioRef.current.play();
     }, 100);
@@ -100,14 +95,6 @@ const BackgroundMusic = () => {
       audioRef.current.currentTime = seekTime;
       setCurrentTime(seekTime);
     }
-  };
-
-  const handleAudioError = () => {
-    console.warn(`Lỗi tải bài nhạc #${currentTrackIndex + 1}, đang chuyển bài tiếp theo...`);
-    setLoadError(true);
-    setTimeout(() => {
-      handleNext();
-    }, 1000);
   };
 
   const formatTime = (timeInSeconds) => {
@@ -132,7 +119,6 @@ const BackgroundMusic = () => {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleTimeUpdate}
         onEnded={handleNext}
-        onError={handleAudioError}
         loop={false}
       />
 
@@ -166,14 +152,14 @@ const BackgroundMusic = () => {
               animation: isPlaying ? 'spin 4s linear infinite' : 'none',
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
             }}
-            title="Nhấp để mở Radio Tình Khúc Bất Hủ đầy đủ"
+            title="Nhấp để mở Radio Dương Cầm Bất Hủ đầy đủ"
           >
             📻
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }} onClick={() => setIsExpanded(true)}>
             <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--primary-brown)' }}>
-              {loadError ? '⏳ Đang kết nối...' : currentTrack.title}
+              {currentTrack.title}
             </span>
             <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
               {isPlaying ? `${formatTime(currentTime)} / ${formatTime(duration)}` : 'Đang dừng • Nhấp để mở rộng'}
@@ -224,7 +210,7 @@ const BackgroundMusic = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed var(--light-brown)', paddingBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '20px' }}>📻</span>
-              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Tình Khúc Bất Hủ</span>
+              <span style={{ fontWeight: 'bold', color: 'var(--primary-brown)', fontSize: '14px' }}>Radio Dương Cầm Bất Hủ</span>
             </div>
             <button 
               onClick={() => setIsExpanded(false)} 
@@ -253,7 +239,7 @@ const BackgroundMusic = () => {
               🎼
             </div>
             <h4 style={{ fontSize: '15px', color: 'var(--primary-brown)', fontWeight: 'bold' }}>
-              {loadError ? '⏳ Đang kết nối bài nhạc...' : currentTrack.title}
+              {currentTrack.title}
             </h4>
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{currentTrack.artist}</p>
           </div>
@@ -289,14 +275,13 @@ const BackgroundMusic = () => {
 
           {/* Danh sách 10 bản nhạc */}
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách Tình Khúc Bất Hủ (Piano êm dịu):</label>
+            <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Danh sách Dương Cầm Cổ Điển Bất Hủ (Chuẩn Quốc Tế):</label>
             <select
               value={currentTrackIndex}
               onChange={(e) => {
                 const idx = parseInt(e.target.value);
                 setCurrentTrackIndex(idx);
                 setIsPlaying(true);
-                setLoadError(false);
                 setTimeout(() => { if (audioRef.current) audioRef.current.play(); }, 100);
               }}
               style={{

@@ -192,15 +192,61 @@ const AlbumDetail = () => {
   const getLocationCoords = (locationName) => {
     if (!locationName) return [16.047, 108.206];
     const loc = locationName.toLowerCase();
+    
+    // Miền Bắc
     if (loc.includes('hà nội') || loc.includes('hn')) return [21.0285, 105.8542];
-    if (loc.includes('hồ chí minh') || loc.includes('sài gòn') || loc.includes('hcm')) return [10.8231, 106.6297];
-    if (loc.includes('nam định') || loc.includes('nđ')) return [20.4312, 106.1834];
     if (loc.includes('hải phòng') || loc.includes('hp')) return [20.8449, 106.6881];
-    if (loc.includes('đà nẵng') || loc.includes('đn')) return [16.0544, 108.2022];
+    if (loc.includes('thanh hóa') || loc.includes('thanh hoá') || loc.includes('thanh hoa')) return [19.8067, 105.7851];
+    if (loc.includes('nam định') || loc.includes('nđ')) return [20.4312, 106.1834];
+    if (loc.includes('ninh bình')) return [20.2506, 105.9745];
+    if (loc.includes('nghệ an') || loc.includes('vinh')) return [18.6734, 105.6813];
+    if (loc.includes('hà tĩnh')) return [18.3559, 105.8877];
+    if (loc.includes('phú thọ') || loc.includes('việt trì')) return [21.3228, 105.4019];
+    if (loc.includes('vĩnh phúc')) return [21.3089, 105.6049];
+    if (loc.includes('bắc ninh')) return [21.1861, 106.0763];
+    if (loc.includes('bắc giang')) return [21.2731, 106.1946];
+    if (loc.includes('thái nguyên')) return [21.5928, 105.8442];
+    if (loc.includes('quảng ninh') || loc.includes('hạ long')) return [20.9599, 107.0425];
+    if (loc.includes('hải dương')) return [20.9374, 106.3146];
+    if (loc.includes('hưng yên')) return [20.6464, 106.0511];
+    if (loc.includes('hà nam')) return [20.5453, 105.9126];
+    if (loc.includes('hòa bình') || loc.includes('hoà bình')) return [20.8172, 105.3376];
+    if (loc.includes('sơn la')) return [21.3256, 103.9188];
+    if (loc.includes('điện biên')) return [21.3853, 103.0188];
+    if (loc.includes('lai châu')) return [22.3964, 103.4584];
+    if (loc.includes('lào cai') || loc.includes('sapa')) return [22.3364, 103.8438];
+    if (loc.includes('yên bái')) return [21.7050, 104.8753];
+    if (loc.includes('hà giang')) return [22.8233, 104.9839];
+    if (loc.includes('cao bằng')) return [22.6657, 106.2573];
+    if (loc.includes('lạng sơn')) return [21.8475, 106.7583];
+
+    // Miền Trung & Tây Nguyên
+    if (loc.includes('quảng bình') || loc.includes('đồng hới')) return [17.4761, 106.5983];
+    if (loc.includes('quảng trị')) return [16.8164, 107.1004];
     if (loc.includes('huế')) return [16.4637, 107.5909];
-    if (loc.includes('nha trang')) return [12.2388, 109.1967];
-    if (loc.includes('đà lạt')) return [11.9404, 108.4583];
+    if (loc.includes('đà nẵng') || loc.includes('đn')) return [16.0544, 108.2022];
+    if (loc.includes('quảng nam') || loc.includes('hội an')) return [15.8801, 108.3380];
+    if (loc.includes('quảng ngãi')) return [15.1213, 108.7924];
+    if (loc.includes('bình định') || loc.includes('quy nhơn')) return [13.7830, 109.2197];
+    if (loc.includes('phú yên') || loc.includes('tuy hòa')) return [13.0882, 109.3149];
+    if (loc.includes('nha trang') || loc.includes('khánh hòa')) return [12.2388, 109.1967];
+    if (loc.includes('ninh thuận') || loc.includes('phan rang')) return [11.5644, 108.9890];
+    if (loc.includes('bình thuận') || loc.includes('phan thiết')) return [10.9333, 108.1000];
+    if (loc.includes('đà lạt') || loc.includes('lâm đồng')) return [11.9404, 108.4583];
+    if (loc.includes('đắk lắk') || loc.includes('buôn ma thuột')) return [12.6667, 108.0500];
+    if (loc.includes('gia lai') || loc.includes('pleiku')) return [13.9833, 108.0000];
+    if (loc.includes('kon tum')) return [14.3500, 108.0000];
+
+    // Miền Nam
+    if (loc.includes('hồ chí minh') || loc.includes('sài gòn') || loc.includes('hcm')) return [10.8231, 106.6297];
     if (loc.includes('cần thơ')) return [10.0452, 105.7469];
+    if (loc.includes('vũng tàu') || loc.includes('bà rịa')) return [10.3460, 107.0843];
+    if (loc.includes('bình dương')) return [11.1667, 106.6667];
+    if (loc.includes('đồng nai') || loc.includes('biên hòa')) return [10.9575, 106.8427];
+    if (loc.includes('an giang') || loc.includes('long xuyên')) return [10.3833, 105.4333];
+    if (loc.includes('kiên giang') || loc.includes('phú quốc') || loc.includes('rạch giá')) return [10.0167, 105.0833];
+    if (loc.includes('cà mau')) return [9.1769, 105.1500];
+
     return [16.047, 108.206];
   };
 
@@ -626,7 +672,7 @@ const AlbumDetail = () => {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ textAlign: 'left' }}>
-                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình (Bảng Kéo Thả)</h3>
+                  <h3 style={{ fontSize: '24px', color: 'var(--primary-brown)', marginBottom: '4px' }}>🌳 Sơ Đồ Gia Đình</h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Kéo các thẻ để di chuyển vị trí, nhấp trực tiếp để sửa thông tin và liên kết các thành viên.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>

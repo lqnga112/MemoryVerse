@@ -3,13 +3,13 @@ const fs = require('fs');
 const path = require('path');
 const Memory = require('../models/memory.model');
 
-// Helper lấy Generative Model linh hoạt
+// Helper lấy Generative Model chuẩn nhất (gemini-3.5-flash)
 function getGenerativeModel(genAI) {
   try {
-    return genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    return genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
   } catch (e) {
     try {
-      return genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      return genAI.getGenerativeModel({ model: "gemini-3.7-flash" });
     } catch (e2) {
       return genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     }
@@ -60,7 +60,13 @@ exports.extractTextFromImage = async (req, res) => {
 
     const imagePart = fileToGenerativePart(filePath, mimeType);
     
-    const prompt = "Hãy đọc và trích xuất mọi văn bản tiếng Việt xuất hiện trong bức ảnh này. Nếu là thư tay, hãy cố gắng đọc chữ viết tay đó một cách chính xác nhất có thể. Trả về cho tôi ĐÚNG nội dung văn bản bạn đọc được, KHÔNG thêm thắt bất kỳ lời chào hay giải thích nào khác.";
+    const prompt = `Bạn là chuyên gia Thị giác Máy tính (Computer Vision) và xử lý chữ viết tay (OCR).
+Hãy thực hiện quy trình 3 bước phân tích bức thư tay tiếng Việt:
+1. Tiền xử lý hình ảnh: Quét nét mực, độ tương phản trên giấy.
+2. Nhận diện chữ viết tay (Handwriting Recognition): Chuyển đổi các ký tự uốn lượn tiếng Việt.
+3. Hiểu ngữ cảnh ngôn ngữ & lịch sử: Khôi phục chính xác các từ mờ.
+
+Trả về ĐÚNG toàn bộ văn bản tiếng Việt đọc được từ bức thư tay này, KHÔNG thêm lời chào hay giải thích.`;
     
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;

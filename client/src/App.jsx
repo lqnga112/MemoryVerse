@@ -5,10 +5,9 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import AlbumDetail from './pages/AlbumDetail';
+import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import BackgroundMusic from './components/BackgroundMusic';
-
-
 
 export default function App() {
   return (
@@ -23,6 +22,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/albums/:id" element={<AlbumDetail />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </Router>

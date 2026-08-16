@@ -133,6 +133,9 @@ const Profile = () => {
             <button onClick={() => navigate('/settings')} className="btn-outline">
               ⚙️ Cài đặt tài khoản
             </button>
+            <button onClick={() => navigate('/admin')} className="btn-outline" style={{ background: 'rgba(168, 139, 119, 0.15)', borderColor: 'var(--primary-brown)' }}>
+              🛡️ Trang Quản trị Admin
+            </button>
           </div>
         </div>
         <button onClick={handleLogout} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', width: '100%', justifyContent: 'center' }}>

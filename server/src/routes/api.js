@@ -57,4 +57,12 @@ router.put('/users/profile', authMiddleware, userController.updateProfile);
 router.post('/users/avatar', authMiddleware, upload.single('avatar'), userController.uploadAvatar);
 router.put('/users/password', authMiddleware, userController.changePassword);
 
+const adminController = require('../controllers/admin.controller');
+
+// --- Admin Routes ---
+router.get('/admin/stats', authMiddleware, adminController.getAdminStats);
+router.get('/admin/users', authMiddleware, adminController.getAllUsers);
+router.put('/admin/users/:userId/role', authMiddleware, adminController.updateUserRole);
+router.post('/admin/make-me-admin', authMiddleware, adminController.makeMeAdmin);
+
 module.exports = router;

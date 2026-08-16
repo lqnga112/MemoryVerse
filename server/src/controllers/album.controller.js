@@ -153,11 +153,16 @@ exports.deleteAlbum = async (req, res) => {
 exports.updateMemory = async (req, res) => {
   try {
     const { memoryId } = req.params;
-    const { title, memoryDate, location } = req.body;
+    const { title, memoryDate, location, extractedText } = req.body;
     
+    const updateFields = { title, memoryDate, location };
+    if (extractedText !== undefined) {
+      updateFields.extractedText = extractedText;
+    }
+
     const memory = await Memory.findOneAndUpdate(
       { _id: memoryId, ownerId: req.user.userId },
-      { title, memoryDate, location },
+      updateFields,
       { new: true }
     );
     

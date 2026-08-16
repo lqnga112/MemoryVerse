@@ -14,6 +14,7 @@ const AlbumDetail = () => {
   // States cho Lightbox (Trình xem ảnh/sửa xóa ảnh)
   const [selectedMemory, setSelectedMemory] = useState(null);
   const [memoryTitle, setMemoryTitle] = useState('');
+  const [memoryExtractedText, setMemoryExtractedText] = useState('');
   const [updatingMemory, setUpdatingMemory] = useState(false);
   
   // AI States
@@ -339,6 +340,7 @@ const AlbumDetail = () => {
   const openLightbox = (memory) => {
     setSelectedMemory(memory);
     setMemoryTitle(memory.title || '');
+    setMemoryExtractedText(memory.extractedText || '');
     setIsListening(false);
   };
 
@@ -350,13 +352,14 @@ const AlbumDetail = () => {
       await axios.put(`http://localhost:5001/api/memories/${selectedMemory._id}`, 
         { 
           title: memoryTitle,
+          extractedText: memoryExtractedText,
           memoryDate: selectedMemory.memoryDate,
           location: selectedMemory.location
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle, memoryDate: selectedMemory.memoryDate, location: selectedMemory.location } : m));
+      setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle, extractedText: memoryExtractedText, memoryDate: selectedMemory.memoryDate, location: selectedMemory.location } : m));
       setSelectedMemory(null);
       if (isListening) recognitionRef.current.stop();
     } catch (err) {
@@ -403,7 +406,7 @@ const AlbumDetail = () => {
       });
       
       const extractedText = res.data.text;
-      setMemoryTitle(prev => prev + (prev ? '\\n' : '') + extractedText.trim());
+      setMemoryExtractedText(prev => prev + (prev ? '\n' : '') + extractedText.trim());
     } catch (error) {
       console.error(error);
       alert('Không thể đọc được chữ từ ảnh này. Vui lòng thử lại.');
@@ -423,7 +426,7 @@ const AlbumDetail = () => {
       });
       
       const extractedText = res.data.text;
-      setMemoryTitle(prev => prev + (prev ? '\n' : '') + extractedText.trim());
+      setMemoryExtractedText(prev => prev + (prev ? '\n' : '') + extractedText.trim());
     } catch (error) {
       console.error(error);
       alert('Không thể bóc băng ghi âm này. Vui lòng thử lại.');
@@ -988,23 +991,35 @@ const AlbumDetail = () => {
               </div>
 
               <form onSubmit={handleUpdateMemory}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Nội dung / Câu chuyện</label>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Tiêu đề Kỷ vật (In đậm)</label>
+                  <input 
+                    type="text"
+                    value={memoryTitle}
+                    onChange={e => setMemoryTitle(e.target.value)}
+                    className="form-input"
+                    style={{ padding: '10px 12px', fontWeight: 'bold' }}
+                    placeholder="Nhập tiêu đề kỷ vật..."
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Văn bản AI / Nội dung chi tiết</label>
                   {/* Nút Mic Nhận diện giọng nói */}
                   <button 
                     type="button" 
                     onClick={toggleListen}
-                    style={{ background: isListening ? 'rgba(239, 68, 68, 0.2)' : 'rgba(155, 119, 92, 0.1)', color: isListening ? '#f87171' : 'var(--primary-brown)', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.3s' }}
+                    style={{ background: isListening ? 'rgba(239, 68, 68, 0.2)' : 'rgba(155, 119, 92, 0.1)', color: isListening ? '#f87171' : 'var(--primary-brown)', border: 'none', padding: '4px 10px', borderRadius: '12px', cursor: 'pointer', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.3s' }}
                   >
                     {isListening ? '🔴 Đang nghe...' : '🎙️ Nói để gõ'}
                   </button>
                 </div>
                 <textarea 
-                  value={memoryTitle}
-                  onChange={e => setMemoryTitle(e.target.value)}
+                  value={memoryExtractedText}
+                  onChange={e => setMemoryExtractedText(e.target.value)}
                   className="form-input"
-                  style={{ minHeight: '120px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid rgba(155, 119, 92, 0.3)' }}
-                  placeholder="Thêm câu chuyện hoặc mô tả..."
+                  style={{ minHeight: '110px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid rgba(155, 119, 92, 0.3)' }}
+                  placeholder="Nội dung trích xuất AI (OCR, STT) hoặc câu chuyện chi tiết..."
                 />
                 
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>

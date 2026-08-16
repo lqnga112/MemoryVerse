@@ -7,6 +7,7 @@ import Settings from './pages/Settings';
 import AlbumDetail from './pages/AlbumDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import BackgroundMusic from './components/BackgroundMusic';
 
 export default function App() {
@@ -22,7 +23,11 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/albums/:id" element={<AlbumDetail />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          
+          {/* Tuyến đường bảo vệ nghiêm ngặt chỉ dành riêng cho Admin */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'http://localhost:5001/api';
 
   useEffect(() => {
     fetchData();
@@ -142,25 +142,6 @@ const AdminDashboard = () => {
             }}>
               Vai trò: {currentUser.role.toUpperCase()}
             </span>
-          )}
-
-          {currentUser && currentUser.role !== 'admin' && (
-            <button
-              onClick={handleMakeMeAdmin}
-              style={{
-                background: '#4CAF50',
-                color: '#FFF',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 14px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
-              }}
-            >
-              ⚡ Bấm để Trở Thành Admin
-            </button>
           )}
 
           <button 

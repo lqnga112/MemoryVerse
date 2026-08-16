@@ -21,7 +21,7 @@ const Settings = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/users/profile', {
+      const res = await axios.get('http://localhost:5001/api/users/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(res.data);
@@ -40,7 +40,7 @@ const Settings = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put('http://localhost:5000/api/users/profile', 
+      const res = await axios.put('http://localhost:5001/api/users/profile', 
         { full_name: fullName, bio },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -63,7 +63,7 @@ const Settings = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/users/avatar', formData, {
+      const res = await axios.post('http://localhost:5001/api/users/avatar', formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -85,7 +85,7 @@ const Settings = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/users/password', 
+      await axios.put('http://localhost:5001/api/users/password', 
         { oldPassword, newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -131,7 +131,7 @@ const Settings = () => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '200px' }}>
             <div style={{ width: '150px', height: '150px', borderRadius: '50%', overflow: 'hidden', border: '4px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', position: 'relative' }}>
               <img 
-                src={user?.avatar_url ? `http://localhost:5000${user.avatar_url}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
+                src={user?.avatar_url ? `http://localhost:5001${user.avatar_url}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
                 alt="Avatar" 
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
               />

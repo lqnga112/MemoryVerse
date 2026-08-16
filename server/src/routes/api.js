@@ -58,11 +58,12 @@ router.post('/users/avatar', authMiddleware, upload.single('avatar'), userContro
 router.put('/users/password', authMiddleware, userController.changePassword);
 
 const adminController = require('../controllers/admin.controller');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
-// --- Admin Routes ---
-router.get('/admin/stats', authMiddleware, adminController.getAdminStats);
-router.get('/admin/users', authMiddleware, adminController.getAllUsers);
-router.put('/admin/users/:userId/role', authMiddleware, adminController.updateUserRole);
-router.post('/admin/make-me-admin', authMiddleware, adminController.makeMeAdmin);
+// --- Admin Routes (Được bảo vệ nghiêm ngặt bằng adminMiddleware) ---
+router.get('/admin/stats', authMiddleware, adminMiddleware, adminController.getAdminStats);
+router.get('/admin/users', authMiddleware, adminMiddleware, adminController.getAllUsers);
+router.put('/admin/users/:userId/role', authMiddleware, adminMiddleware, adminController.updateUserRole);
+
 
 module.exports = router;

@@ -297,7 +297,7 @@ const AlbumDetail = () => {
   const fetchMemories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/albums/${id}/memories`, {
+      const res = await axios.get(`http://localhost:5001/api/albums/${id}/memories`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlbum(res.data.album);
@@ -321,7 +321,7 @@ const AlbumDetail = () => {
     setUploading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/albums/${id}/memories`, formData, {
+      await axios.post(`http://localhost:5001/api/albums/${id}/memories`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -347,7 +347,7 @@ const AlbumDetail = () => {
     setUpdatingMemory(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/memories/${selectedMemory._id}`, 
+      await axios.put(`http://localhost:5001/api/memories/${selectedMemory._id}`, 
         { 
           title: memoryTitle,
           memoryDate: selectedMemory.memoryDate,
@@ -370,7 +370,7 @@ const AlbumDetail = () => {
     if (!window.confirm('Bạn có chắc muốn xóa vĩnh viễn kỷ niệm này?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/memories/${selectedMemory._id}`, {
+      await axios.delete(`http://localhost:5001/api/memories/${selectedMemory._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -398,7 +398,7 @@ const AlbumDetail = () => {
     setIsOcrRunning(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:5000/api/ai/ocr/${selectedMemory._id}`, {}, {
+      const res = await axios.post(`http://localhost:5001/api/ai/ocr/${selectedMemory._id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -418,7 +418,7 @@ const AlbumDetail = () => {
     setIsSttRunning(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:5000/api/ai/stt/${selectedMemory._id}`, {}, {
+      const res = await axios.post(`http://localhost:5001/api/ai/stt/${selectedMemory._id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -436,7 +436,7 @@ const AlbumDetail = () => {
     setGeneratingStory(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:5000/api/ai/story/${id}`, {}, {
+      const res = await axios.post(`http://localhost:5001/api/ai/story/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStory(res.data.story);
@@ -458,7 +458,7 @@ const AlbumDetail = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:5000/api/ai/chat/${id}`, { question: userMsg.content }, {
+      const res = await axios.post(`http://localhost:5001/api/ai/chat/${id}`, { question: userMsg.content }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setChatMessages(prev => [...prev, { role: 'ai', content: res.data.answer }]);
@@ -619,11 +619,11 @@ const AlbumDetail = () => {
                             {/* Thumbnail */}
                             <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#f5f5f5', flexShrink: 0 }}>
                               {memory.fileType === 'video' ? (
-                                <video src={`http://localhost:5000${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <video src={`http://localhost:5001${memory.fileUrl}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               ) : memory.fileType === 'audio' ? (
                                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--light-brown)', color: 'white', fontSize: '32px' }}>🎵</div>
                               ) : (
-                                <img src={`http://localhost:5000${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'sepia(0.2)' }} />
+                                <img src={`http://localhost:5001${memory.fileUrl}`} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'sepia(0.2)' }} />
                               )}
                             </div>
                             
@@ -946,13 +946,13 @@ const AlbumDetail = () => {
             {/* Vùng hiển thị Ảnh/Video to */}
             <div style={{ flex: 1, background: '#000', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
               {selectedMemory.fileType === 'video' ? (
-                <video src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%' }} controls autoPlay />
+                <video src={`http://localhost:5001${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%' }} controls autoPlay />
               ) : selectedMemory.fileType === 'audio' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                   <div style={{ width: '200px', height: '200px', borderRadius: '50%', background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'spin 10s linear infinite' }}>
                     <span style={{ fontSize: '80px' }}>🎵</span>
                   </div>
-                  <audio src={`http://localhost:5000${selectedMemory.fileUrl}`} controls autoPlay />
+                  <audio src={`http://localhost:5001${selectedMemory.fileUrl}`} controls autoPlay />
                   
                   {/* Nút STT */}
                   <button 
@@ -965,7 +965,7 @@ const AlbumDetail = () => {
                 </div>
               ) : (
                 <>
-                  <img src={`http://localhost:5000${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  <img src={`http://localhost:5001${selectedMemory.fileUrl}`} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                   {/* Nút OCR chỉ ưu tiên cho thư tay hoặc ảnh */}
                   {(selectedMemory.fileType === 'letter' || selectedMemory.fileType === 'image') && (
                     <button 

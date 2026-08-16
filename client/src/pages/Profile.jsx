@@ -25,12 +25,12 @@ const Profile = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const userRes = await axios.get('http://localhost:5000/api/auth/me', {
+      const userRes = await axios.get('http://localhost:5001/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(userRes.data);
 
-      const albumRes = await axios.get('http://localhost:5000/api/albums', {
+      const albumRes = await axios.get('http://localhost:5001/api/albums', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlbums(albumRes.data);
@@ -53,7 +53,7 @@ const Profile = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/albums', 
+      await axios.post('http://localhost:5001/api/albums', 
         { title: albumTitle, description: albumDesc },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -82,7 +82,7 @@ const Profile = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/albums/${editingAlbumId}`, 
+      await axios.put(`http://localhost:5001/api/albums/${editingAlbumId}`, 
         { title: albumTitle, description: albumDesc },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -101,7 +101,7 @@ const Profile = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/albums/${id}`, {
+      await axios.delete(`http://localhost:5001/api/albums/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
@@ -133,9 +133,11 @@ const Profile = () => {
             <button onClick={() => navigate('/settings')} className="btn-outline">
               ⚙️ Cài đặt tài khoản
             </button>
-            <button onClick={() => navigate('/admin')} className="btn-outline" style={{ background: 'rgba(168, 139, 119, 0.15)', borderColor: 'var(--primary-brown)' }}>
-              🛡️ Trang Quản trị Admin
-            </button>
+            {user?.role === 'admin' && (
+              <button onClick={() => navigate('/admin')} className="btn-outline" style={{ background: 'rgba(168, 139, 119, 0.15)', borderColor: 'var(--primary-brown)' }}>
+                🛡️ Trang Quản trị Admin
+              </button>
+            )}
           </div>
         </div>
         <button onClick={handleLogout} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', width: '100%', justifyContent: 'center' }}>
@@ -153,7 +155,7 @@ const Profile = () => {
               <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{user?.email}</p>
             </div>
             <img 
-              src={user?.avatar_url ? `http://localhost:5000${user.avatar_url}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
+              src={user?.avatar_url ? `http://localhost:5001${user.avatar_url}` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${user?.email}`} 
               alt="Avatar" 
               style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', objectFit: 'cover' }} 
             />
@@ -193,7 +195,7 @@ const Profile = () => {
                 <div className="album-cover">
                   {album.coverImage ? (
                     <img 
-                      src={`http://localhost:5000${album.coverImage}`} 
+                      src={`http://localhost:5001${album.coverImage}`} 
                       alt="Cover" 
                       onError={(e) => {
                         e.target.style.display = 'none';

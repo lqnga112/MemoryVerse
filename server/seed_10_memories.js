@@ -7,32 +7,30 @@ const Memory = require('./src/models/memory.model');
 async function seedData() {
   try {
     await mongoose.connect('mongodb://127.0.0.1:27017/family_memory_db');
-    console.log('✅ Đã kết nối CSDL MongoDB để nạp 10 kỷ niệm demo...');
+    console.log('✅ Đã kết nối CSDL MongoDB để nạp lại dữ liệu với tài khoản mới...');
 
-    // 1. Tạo hoặc nạp tài khoản Admin & User mẫu
-    const passwordHash = await bcrypt.hash('123456', 10);
+    // 1. Tạo mật khẩu mã hóa Bcrypt mới
+    const adminPasswordHash = await bcrypt.hash('Admin@123', 10);
+    const userPasswordHash = await bcrypt.hash('User@123', 10);
     
-    let adminUser = await User.findOne({ email: 'admin@gmail.com' });
-    if (!adminUser) {
-      adminUser = await User.create({
-        email: 'admin@gmail.com',
-        password_hash: passwordHash,
-        full_name: 'Quản Trị Viên (Admin)',
-        role: 'admin',
-        bio: 'Tài khoản Quản trị hệ thống MemoryVerse'
-      });
-    }
+    // Xóa các tài khoản cũ để tạo tài khoản chuẩn mới
+    await User.deleteMany({ email: { $in: ['admin@gmail.com', 'user@gmail.com', 'admin@memoryverse.com', 'demo_user@memoryverse.com'] } });
 
-    let normalUser = await User.findOne({ email: 'user@gmail.com' });
-    if (!normalUser) {
-      normalUser = await User.create({
-        email: 'user@gmail.com',
-        password_hash: passwordHash,
-        full_name: 'Ông Nguyễn Văn An',
-        role: 'user',
-        bio: 'Hành trình 80 năm hoài niệm cuộc đời'
-      });
-    }
+    const adminUser = await User.create({
+      email: 'admin@memoryverse.com',
+      password_hash: adminPasswordHash,
+      full_name: 'Quản Trị Viên (Admin)',
+      role: 'admin',
+      bio: 'Tài khoản Quản trị hệ thống MemoryVerse'
+    });
+
+    const normalUser = await User.create({
+      email: 'demo_user@memoryverse.com',
+      password_hash: userPasswordHash,
+      full_name: 'Ông Nguyễn Văn An',
+      role: 'user',
+      bio: 'Hành trình 80 năm hoài niệm cuộc đời'
+    });
 
     // 2. Tạo Album "Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)"
     let demoAlbum = await Album.findOne({ title: 'Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)' });
@@ -153,9 +151,9 @@ async function seedData() {
     ];
 
     await Memory.insertMany(memoriesData);
-    console.log(`🎉 NẠP THÀNH CÔNG 10 KỶ NIỆM MẪU VÀO ALBUM!`);
-    console.log(`📌 Tài khoản User: user@gmail.com / Pass: 123456`);
-    console.log(`📌 Tài khoản Admin: admin@gmail.com / Pass: 123456`);
+    console.log(`🎉 NẠP THÀNH CÔNG DỮ LIỆU VỚI TÀI KHOẢN MỚI CHUẨN!`);
+    console.log(`📌 User Email: demo_user@memoryverse.com / Pass: User@123`);
+    console.log(`📌 Admin Email: admin@memoryverse.com / Pass: Admin@123`);
   } catch (err) {
     console.error('❌ Lỗi nạp dữ liệu demo:', err);
   } finally {

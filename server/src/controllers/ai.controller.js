@@ -3,7 +3,20 @@ const fs = require('fs');
 const path = require('path');
 const Memory = require('../models/memory.model');
 
-// Hàm Helper để chuyển đổi file ảnh thành định dạng mà Gemini cần
+// Helper lấy Generative Model linh hoạt
+function getGenerativeModel(genAI) {
+  try {
+    return genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  } catch (e) {
+    try {
+      return genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    } catch (e2) {
+      return genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    }
+  }
+}
+
+// Helper để chuyển đổi file media thành base64 cho Gemini
 function fileToGenerativePart(filePath, mimeType) {
   return {
     inlineData: {
@@ -23,8 +36,8 @@ exports.extractTextFromImage = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy kỷ niệm' });
     }
     
-    if (memory.fileType !== 'image') {
-      return res.status(400).json({ message: 'Tính năng này chỉ hỗ trợ hình ảnh' });
+    if (memory.fileType !== 'image' && memory.fileType !== 'letter') {
+      return res.status(400).json({ message: 'Tính năng này hỗ trợ hình ảnh hoặc thư tay' });
     }
 
     // Lấy đường dẫn thật của ảnh trên máy
@@ -35,7 +48,7 @@ exports.extractTextFromImage = async (req, res) => {
 
     // Khởi tạo Gemini AI
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = getGenerativeModel(genAI);
     
     // Xác định MimeType (VD: image/jpeg, image/png)
     const ext = path.extname(filePath).toLowerCase();
@@ -57,7 +70,7 @@ exports.extractTextFromImage = async (req, res) => {
 
   } catch (error) {
     console.error('Gemini OCR Error:', error);
-    res.status(500).json({ message: 'Lỗi khi gọi AI trích xuất chữ' });
+    res.status(500).json({ message: 'Lỗi khi gọi AI trích xuất chữ: ' + (error.message || 'Lỗi không xác định') });
   }
 };
 
@@ -74,7 +87,7 @@ exports.extractTextFromAudio = async (req, res) => {
     if (!fs.existsSync(filePath)) return res.status(404).json({ message: 'File không tồn tại trên máy' });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = getGenerativeModel(genAI);
     
     const ext = path.extname(filePath).toLowerCase();
     let mimeType = 'audio/mp3';
@@ -94,7 +107,7 @@ exports.extractTextFromAudio = async (req, res) => {
 
   } catch (error) {
     console.error('Gemini STT Error:', error);
-    res.status(500).json({ message: 'Lỗi khi gọi AI bóc băng ghi âm' });
+    res.status(500).json({ message: 'Lỗi khi gọi AI bóc băng ghi âm: ' + (error.message || 'Lỗi không xác định') });
   }
 };
 
@@ -121,7 +134,7 @@ exports.generateStory = async (req, res) => {
     });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = getGenerativeModel(genAI);
     
     const prompt = `Bạn là một nhà văn viết hồi ký đầy cảm xúc và tinh tế. Dựa vào chuỗi các sự kiện và kỷ niệm dưới đây, hãy viết một câu chuyện tóm tắt lại cuộc đời của nhân vật này. 
 Hãy chia câu chuyện thành các chương (Ví dụ: Chương 1: Tuổi thơ, Chương 2: Trưởng thành...).
@@ -140,7 +153,7 @@ Format: Trả về bằng ngôn ngữ Markdown (HTML tags không được dùng)
 
   } catch (error) {
     console.error('Gemini Story Error:', error);
-    res.status(500).json({ message: 'Lỗi khi gọi AI viết truyện' });
+    res.status(500).json({ message: 'Lỗi khi gọi AI viết truyện: ' + (error.message || 'Lỗi không xác định') });
   }
 };
 
@@ -160,7 +173,7 @@ exports.chatWithAI = async (req, res) => {
     });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = getGenerativeModel(genAI);
     
     const prompt = `Bạn là một trợ lý thông minh trong Bảo tàng Kỷ niệm. Người dùng đang hỏi về cuộc đời của một người dựa trên những kỷ niệm đã được tải lên.
     Dưới đây là các dữ liệu mà bạn biết:
@@ -171,7 +184,7 @@ exports.chatWithAI = async (req, res) => {
     Yêu cầu:
     - Trả lời thân thiện, lịch sự.
     - CHỈ dựa vào dữ liệu trên để trả lời. Nếu không có thông tin trong dữ liệu, hãy nói "Tôi chưa có dữ liệu về phần này trong hành trình".
-    - Không bịaa chuyện.
+    - Không bịa chuyện.
     `;
     
     const result = await model.generateContent(prompt);
@@ -182,6 +195,6 @@ exports.chatWithAI = async (req, res) => {
 
   } catch (error) {
     console.error('Gemini Chat Error:', error);
-    res.status(500).json({ message: 'Lỗi khi hỏi đáp AI' });
+    res.status(500).json({ message: 'Lỗi khi hỏi đáp AI: ' + (error.message || 'Lỗi không xác định') });
   }
 };

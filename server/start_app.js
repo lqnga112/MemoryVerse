@@ -47,17 +47,32 @@ async function main() {
     });
     console.log(`✅ [MongoDB Persistent] Máy chủ MongoDB đang chạy và lưu cố định tại: ${dbDir}`);
   } catch (err) {
-    console.warn('⚠️ Không thể khởi động MongoDB WiredTiger đĩa, đang chuyển sang MongoDB In-Memory...');
+    console.warn('⚠️ Lỗi đĩa MongoDB, đang làm sạch thư mục db_data để tự khôi phục...');
     try {
+      fs.rmSync(dbDir, { recursive: true, force: true });
+      fs.mkdirSync(dbDir, { recursive: true });
       mongoServer = await MongoMemoryServer.create({
         instance: {
           port: 27017,
-          ip: '127.0.0.1'
+          ip: '127.0.0.1',
+          dbPath: dbDir,
+          storageEngine: 'wiredTiger'
         }
       });
-      console.log(`✅ [MongoDB In-Memory] Máy chủ MongoDB đang chạy tại: mongodb://127.0.0.1:27017`);
-    } catch(err2) {
-      console.log('ℹ️ Kết nối tới MongoDB cục bộ có sẵn...');
+      console.log(`✅ [MongoDB Persistent] Đã làm sạch và khởi chạy máy chủ MongoDB tại: ${dbDir}`);
+    } catch (err2) {
+      console.warn('⚠️ Chuyển sang MongoDB In-Memory...');
+      try {
+        mongoServer = await MongoMemoryServer.create({
+          instance: {
+            port: 27017,
+            ip: '127.0.0.1'
+          }
+        });
+        console.log(`✅ [MongoDB In-Memory] Máy chủ MongoDB đang chạy tại: mongodb://127.0.0.1:27017`);
+      } catch(err3) {
+        console.log('ℹ️ Kết nối tới MongoDB cục bộ có sẵn...');
+      }
     }
   }
 

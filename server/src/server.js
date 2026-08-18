@@ -12,20 +12,26 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files for uploaded images/videos
 const path = require('path');
-const fs = require('fs');
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 const mongoose = require('mongoose');
 
-// Connect to MongoDB
+// Connect to MongoDB với cơ chế thử lại tự động
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_memory_db';
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ [Database] Kết nối MongoDB thành công!'))
-  .catch((err) => console.error('❌ [Database] Lỗi kết nối MongoDB:', err));
+
+const connectWithRetry = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000
+    });
+    console.log('✅ [Database] Kết nối MongoDB thành công!');
+  } catch (err) {
+    console.warn('⚠️ [Database] Đang chờ CSDL MongoDB khởi động, thử lại sau 2 giây...');
+    setTimeout(connectWithRetry, 2000);
+  }
+};
+
+connectWithRetry();
 
 // Root URL Welcome Status Page
 app.get('/', (req, res) => {

@@ -62,7 +62,7 @@ const Profile = () => {
       }
 
       await axios.post('http://localhost:5001/api/albums', formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setShowModal(false);
       setAlbumTitle('');
@@ -99,7 +99,7 @@ const Profile = () => {
       }
 
       await axios.put(`http://localhost:5001/api/albums/${editingAlbumId}`, formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setShowEditModal(false);
       setEditingAlbumId(null);
@@ -138,8 +138,9 @@ const Profile = () => {
       {/* Sidebar */}
       <aside className="glass-card sidebar">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-            <img src="/logo.png" alt="MemoryVerse Logo" style={{ height: '48px', objectFit: 'contain' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+            <img src="/logo-icon.png" alt="Logo Icon" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+            <h1 style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.5px' }}>MemoryVerse</h1>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button className="btn-outline active">

@@ -16,8 +16,7 @@ start "MEMORYVERSE_FRONTEND" /d "%~dp0client" cmd /k "npm run dev"
 echo.
 echo [3/3] Dang tu dong mo trinh duyet den http://localhost:5000 ...
 ping -n 4 127.0.0.1 > nul
-explorer "http://localhost:5000"
-start "" "http://localhost:5000"
+powershell -c "Start-Process 'http://localhost:5000'"
 
 echo.
 echo ========================================================

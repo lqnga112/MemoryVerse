@@ -40,7 +40,7 @@ const aiController = require('../controllers/ai.controller');
 // --- Edit & Delete Routes ---
 router.put('/albums/:albumId', authMiddleware, albumController.updateAlbum);
 router.delete('/albums/:albumId', authMiddleware, albumController.deleteAlbum);
-router.put('/memories/:memoryId', authMiddleware, albumController.updateMemory);
+router.put('/memories/:memoryId', authMiddleware, upload.single('file'), albumController.updateMemory);
 router.delete('/memories/:memoryId', authMiddleware, albumController.deleteMemory);
 
 // --- AI Routes ---

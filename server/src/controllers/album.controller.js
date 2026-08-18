@@ -155,9 +155,41 @@ exports.updateMemory = async (req, res) => {
     const { memoryId } = req.params;
     const { title, memoryDate, location, extractedText } = req.body;
     
+    // Tìm kỷ niệm hiện tại
+    const existingMemory = await Memory.findOne({ _id: memoryId, ownerId: req.user.userId });
+    if (!existingMemory) {
+      return res.status(404).json({ message: 'Không tìm thấy kỷ niệm' });
+    }
+
     const updateFields = { title, memoryDate, location };
     if (extractedText !== undefined) {
       updateFields.extractedText = extractedText;
+    }
+
+    // Nếu người dùng tải file mới lên để thay thế tệp cũ
+    if (req.file) {
+      // Xóa file cứng cũ trên đĩa nếu tồn tại
+      if (existingMemory.fileUrl && !existingMemory.fileUrl.startsWith('http')) {
+        const oldFilePath = path.join(__dirname, '../../', existingMemory.fileUrl);
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+          } catch (e) {
+            console.warn('Không thể xóa file cũ:', e.message);
+          }
+        }
+      }
+
+      // Tự động nhận diện loại file mới
+      let fileType = req.body.fileType;
+      if (!fileType) {
+        if (req.file.mimetype.startsWith('video')) fileType = 'video';
+        else if (req.file.mimetype.startsWith('audio')) fileType = 'audio';
+        else fileType = 'image';
+      }
+
+      updateFields.fileUrl = `/uploads/${req.file.filename}`;
+      updateFields.fileType = fileType;
     }
 
     const memory = await Memory.findOneAndUpdate(
@@ -166,7 +198,6 @@ exports.updateMemory = async (req, res) => {
       { new: true }
     );
     
-    if (!memory) return res.status(404).json({ message: 'Không tìm thấy kỷ niệm' });
     res.json(memory);
   } catch (error) {
     console.error('Update memory error:', error);

@@ -15,6 +15,7 @@ const AlbumDetail = () => {
   const [selectedMemory, setSelectedMemory] = useState(null);
   const [memoryTitle, setMemoryTitle] = useState('');
   const [memoryExtractedText, setMemoryExtractedText] = useState('');
+  const [replaceFile, setReplaceFile] = useState(null);
   const [updatingMemory, setUpdatingMemory] = useState(false);
   
   // AI States
@@ -341,6 +342,7 @@ const AlbumDetail = () => {
     setSelectedMemory(memory);
     setMemoryTitle(memory.title || '');
     setMemoryExtractedText(memory.extractedText || '');
+    setReplaceFile(null);
     setIsListening(false);
   };
 
@@ -349,20 +351,25 @@ const AlbumDetail = () => {
     setUpdatingMemory(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5001/api/memories/${selectedMemory._id}`, 
-        { 
-          title: memoryTitle,
-          extractedText: memoryExtractedText,
-          memoryDate: selectedMemory.memoryDate,
-          location: selectedMemory.location
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const formData = new FormData();
+      formData.append('title', memoryTitle);
+      formData.append('extractedText', memoryExtractedText);
+      if (selectedMemory.memoryDate) formData.append('memoryDate', selectedMemory.memoryDate);
+      if (selectedMemory.location) formData.append('location', selectedMemory.location);
+      if (replaceFile) formData.append('file', replaceFile);
+
+      const res = await axios.put(`http://localhost:5001/api/memories/${selectedMemory._id}`, 
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
       );
       
-      setMemories(memories.map(m => m._id === selectedMemory._id ? { ...m, title: memoryTitle, extractedText: memoryExtractedText, memoryDate: selectedMemory.memoryDate, location: selectedMemory.location } : m));
+      const updatedMemory = res.data;
+      setMemories(memories.map(m => m._id === selectedMemory._id ? updatedMemory : m));
       setSelectedMemory(null);
+      setReplaceFile(null);
       if (isListening) recognitionRef.current.stop();
     } catch (err) {
+      console.error(err);
       alert('Cập nhật thất bại');
     } finally {
       setUpdatingMemory(false);
@@ -991,6 +998,40 @@ const AlbumDetail = () => {
               </div>
 
               <form onSubmit={handleUpdateMemory}>
+                {/* Nút Chọn File thay thế */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                    🔄 Thay thế Tệp Media (Ảnh / Video / Âm thanh)
+                  </label>
+                  <input 
+                    type="file" 
+                    id="replace-file-input"
+                    accept="image/*,video/*,audio/*"
+                    style={{ display: 'none' }}
+                    onChange={e => setReplaceFile(e.target.files[0])}
+                  />
+                  <label 
+                    htmlFor="replace-file-input"
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '8px', 
+                      padding: '10px 14px', 
+                      borderRadius: '10px', 
+                      background: replaceFile ? 'rgba(59, 130, 246, 0.2)' : 'rgba(155, 119, 92, 0.15)', 
+                      border: replaceFile ? '1.5px solid #3b82f6' : '1.5px dashed rgba(155, 119, 92, 0.4)', 
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      color: replaceFile ? '#60a5fa' : 'var(--text-primary)',
+                      fontWeight: 'bold',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {replaceFile ? `📁 Đã chọn file mới: ${replaceFile.name}` : '📂 Bấm để chọn Ảnh/Video mới thay thế'}
+                  </label>
+                </div>
+
                 <div style={{ marginBottom: '12px' }}>
                   <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Tiêu đề Kỷ vật (In đậm)</label>
                   <input 

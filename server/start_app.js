@@ -63,6 +63,22 @@ async function main() {
 
   // Khởi động Express API Server
   require('./src/server.js');
+
+  // Kiểm tra và tự động nạp lại tài khoản & album demo nếu CSDL trống
+  setTimeout(async () => {
+    try {
+      const User = require('./src/models/user.model');
+      const userCount = await User.countDocuments();
+      if (userCount === 0) {
+        console.log('🌱 CSDL đang trống, hệ thống tự động nạp tài khoản & 2 Album demo...');
+        require('./seed_10_memories.js');
+      } else {
+        console.log(`✅ CSDL đã sẵn sàng với ${userCount} tài khoản.`);
+      }
+    } catch(e) {
+      console.warn('Lưu ý kiểm tra Auto Seed:', e.message);
+    }
+  }, 1500);
 }
 
 main();

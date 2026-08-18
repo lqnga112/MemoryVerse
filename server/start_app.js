@@ -2,14 +2,42 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const path = require('path');
 const fs = require('fs');
 
-async function main() {
+function cleanStaleLocks(dbDir) {
   try {
-    const dbDir = path.join(__dirname, 'db_data');
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
+    const lockFiles = ['mongod.lock', 'WiredTiger.lock', 'WiredTiger.turtle.set'];
+    lockFiles.forEach(file => {
+      const filePath = path.join(dbDir, file);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log(`🧹 Đã dọn dẹp file lock cũ: ${file}`);
+        } catch(e) {}
+      }
+    });
 
-    const mongoServer = await MongoMemoryServer.create({
+    const tmpSpill = path.join(dbDir, '_tmp');
+    if (fs.existsSync(tmpSpill)) {
+      try {
+        fs.rmSync(tmpSpill, { recursive: true, force: true });
+      } catch(e) {}
+    }
+  } catch (err) {
+    console.warn('Lưu ý dọn file lock:', err.message);
+  }
+}
+
+async function main() {
+  const dbDir = path.join(__dirname, 'db_data');
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+
+  // Dọn dẹp lock file cũ nếu có
+  cleanStaleLocks(dbDir);
+
+  let mongoServer;
+  try {
+    mongoServer = await MongoMemoryServer.create({
       instance: {
         port: 27017,
         ip: '127.0.0.1',
@@ -18,12 +46,23 @@ async function main() {
       }
     });
     console.log(`✅ [MongoDB Persistent] Máy chủ MongoDB đang chạy và lưu cố định tại: ${dbDir}`);
-
-    // Sau khi MongoDB khởi động xong, require và nạp Express server
-    require('./src/server.js');
   } catch (err) {
-    console.error('❌ Lỗi khởi động server:', err);
+    console.warn('⚠️ Không thể khởi động MongoDB WiredTiger đĩa, đang chuyển sang MongoDB In-Memory...');
+    try {
+      mongoServer = await MongoMemoryServer.create({
+        instance: {
+          port: 27017,
+          ip: '127.0.0.1'
+        }
+      });
+      console.log(`✅ [MongoDB In-Memory] Máy chủ MongoDB đang chạy tại: mongodb://127.0.0.1:27017`);
+    } catch(err2) {
+      console.log('ℹ️ Kết nối tới MongoDB cục bộ có sẵn...');
+    }
   }
+
+  // Khởi động Express API Server
+  require('./src/server.js');
 }
 
 main();

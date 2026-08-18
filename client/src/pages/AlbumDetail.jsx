@@ -16,6 +16,7 @@ const AlbumDetail = () => {
   const [memoryTitle, setMemoryTitle] = useState('');
   const [memoryExtractedText, setMemoryExtractedText] = useState('');
   const [replaceFile, setReplaceFile] = useState(null);
+  const [replaceFileType, setReplaceFileType] = useState('image');
   const [updatingMemory, setUpdatingMemory] = useState(false);
   
   // AI States
@@ -343,6 +344,7 @@ const AlbumDetail = () => {
     setMemoryTitle(memory.title || '');
     setMemoryExtractedText(memory.extractedText || '');
     setReplaceFile(null);
+    setReplaceFileType(memory.fileType || 'image');
     setIsListening(false);
   };
 
@@ -354,6 +356,7 @@ const AlbumDetail = () => {
       const formData = new FormData();
       formData.append('title', memoryTitle);
       formData.append('extractedText', memoryExtractedText);
+      formData.append('fileType', replaceFileType);
       if (selectedMemory.memoryDate) formData.append('memoryDate', selectedMemory.memoryDate);
       if (selectedMemory.location) formData.append('location', selectedMemory.location);
       if (replaceFile) formData.append('file', replaceFile);
@@ -998,15 +1001,53 @@ const AlbumDetail = () => {
               </div>
 
               <form onSubmit={handleUpdateMemory}>
+                {/* Phân loại Kỷ vật */}
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                    🏷️ Phân loại Kỷ vật
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                    {[
+                      { type: 'image', icon: '🖼️', label: 'Ảnh' },
+                      { type: 'video', icon: '🎥', label: 'Video' },
+                      { type: 'audio', icon: '🎵', label: 'Ghi âm' },
+                      { type: 'letter', icon: '📝', label: 'Thư tay' }
+                    ].map(item => (
+                      <button
+                        key={item.type}
+                        type="button"
+                        onClick={() => setReplaceFileType(item.type)}
+                        style={{
+                          padding: '6px 2px',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          borderRadius: '8px',
+                          border: replaceFileType === item.type ? '1.5px solid #3b82f6' : '1px solid rgba(155, 119, 92, 0.3)',
+                          background: replaceFileType === item.type ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                          color: replaceFileType === item.type ? '#60a5fa' : 'var(--text-primary)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '3px',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <span>{item.icon}</span> {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Nút Chọn File thay thế */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                    🔄 Thay thế Tệp Media (Ảnh / Video / Âm thanh)
+                    🔄 Thay thế Tệp Media (Tùy chọn)
                   </label>
                   <input 
                     type="file" 
                     id="replace-file-input"
-                    accept="image/*,video/*,audio/*"
+                    accept={replaceFileType === 'video' ? 'video/*' : replaceFileType === 'audio' ? 'audio/*' : 'image/*'}
                     style={{ display: 'none' }}
                     onChange={e => setReplaceFile(e.target.files[0])}
                   />
@@ -1028,7 +1069,7 @@ const AlbumDetail = () => {
                       transition: 'all 0.2s'
                     }}
                   >
-                    {replaceFile ? `📁 Đã chọn file mới: ${replaceFile.name}` : '📂 Bấm để chọn Ảnh/Video mới thay thế'}
+                    {replaceFile ? `📁 Đã chọn: ${replaceFile.name}` : `📂 Chọn Tệp ${replaceFileType === 'video' ? 'Video' : replaceFileType === 'audio' ? 'Ghi âm' : replaceFileType === 'letter' ? 'Thư tay' : 'Ảnh'} mới`}
                   </label>
                 </div>
 

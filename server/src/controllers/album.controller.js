@@ -165,6 +165,9 @@ exports.updateMemory = async (req, res) => {
     if (extractedText !== undefined) {
       updateFields.extractedText = extractedText;
     }
+    if (req.body.fileType) {
+      updateFields.fileType = req.body.fileType;
+    }
 
     // Nếu người dùng tải file mới lên để thay thế tệp cũ
     if (req.file) {
@@ -180,7 +183,7 @@ exports.updateMemory = async (req, res) => {
         }
       }
 
-      // Tự động nhận diện loại file mới
+      // Tự động nhận diện loại file mới nếu client không chỉ định fileType
       let fileType = req.body.fileType;
       if (!fileType) {
         if (req.file.mimetype.startsWith('video')) fileType = 'video';

@@ -24,7 +24,7 @@ export default function Login() {
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
       <div className="glass-card" style={{ width: '100%', maxWidth: '400px', padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ textAlign: 'center' }}>
-          <span className="badge" style={{ marginBottom: '12px' }}>MemoryVerse</span>
+          <img src="/logo.png" alt="MemoryVerse Logo" style={{ height: '54px', objectFit: 'contain', marginBottom: '12px' }} />
           <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary-brown)' }}>Đăng Nhập</h2>
           <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>Chào mừng bạn quay trở lại với cuốn hồi ký gia đình</p>
         </div>

@@ -109,8 +109,7 @@ const Settings = () => {
       <aside className="glass-card sidebar">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>✨</div>
-            <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>MemoryVerse</h1>
+            <img src="/logo.png" alt="MemoryVerse Logo" style={{ height: '48px', objectFit: 'contain' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button onClick={() => navigate('/profile')} className="btn-outline">

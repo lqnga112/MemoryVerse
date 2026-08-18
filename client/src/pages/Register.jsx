@@ -29,11 +29,8 @@ export default function Register() {
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
       <div className="glass-card" style={{ width: '100%', maxWidth: '400px', padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
-            <img src="/logo-icon.png" alt="Logo Icon" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-            <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--primary-brown)', margin: 0 }}>MemoryVerse</h1>
-          </div>
-          <h2 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary-brown)' }}>Đăng Ký</h2>
+          <img src="/logo.png" alt="MemoryVerse Logo" style={{ height: '60px', objectFit: 'contain', marginBottom: '12px' }} />
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary-brown)' }}>Đăng Ký</h2>
           <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>Tạo tài khoản để bắt đầu lưu giữ những kỷ niệm gia đình</p>
         </div>
 

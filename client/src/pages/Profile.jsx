@@ -13,7 +13,6 @@ const Profile = () => {
   
   const [albumTitle, setAlbumTitle] = useState('');
   const [albumDesc, setAlbumDesc] = useState('');
-  const [albumCoverFile, setAlbumCoverFile] = useState(null);
   const [editingAlbumId, setEditingAlbumId] = useState(null);
   const [processing, setProcessing] = useState(false);
 
@@ -54,20 +53,13 @@ const Profile = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const formData = new FormData();
-      formData.append('title', albumTitle);
-      formData.append('description', albumDesc);
-      if (albumCoverFile) {
-        formData.append('coverImage', albumCoverFile);
-      }
-
-      await axios.post('http://localhost:5001/api/albums', formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post('http://localhost:5001/api/albums', 
+        { title: albumTitle, description: albumDesc },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setShowModal(false);
       setAlbumTitle('');
       setAlbumDesc('');
-      setAlbumCoverFile(null);
       fetchData();
     } catch (error) {
       alert('Tạo album thất bại');
@@ -80,9 +72,8 @@ const Profile = () => {
   const handleEditClick = (e, album) => {
     e.stopPropagation(); // Ngăn sự kiện click lan ra thẻ cha
     setAlbumTitle(album.title);
-    setAlbumDesc(album.description || '');
+    setAlbumDesc(album.description);
     setEditingAlbumId(album._id);
-    setAlbumCoverFile(null);
     setShowEditModal(true);
   };
 
@@ -91,21 +82,11 @@ const Profile = () => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const formData = new FormData();
-      formData.append('title', albumTitle);
-      formData.append('description', albumDesc);
-      if (albumCoverFile) {
-        formData.append('coverImage', albumCoverFile);
-      }
-
-      await axios.put(`http://localhost:5001/api/albums/${editingAlbumId}`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.put(`http://localhost:5001/api/albums/${editingAlbumId}`, 
+        { title: albumTitle, description: albumDesc },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setShowEditModal(false);
-      setEditingAlbumId(null);
-      setAlbumTitle('');
-      setAlbumDesc('');
-      setAlbumCoverFile(null);
       fetchData();
     } catch (error) {
       alert('Cập nhật album thất bại');
@@ -138,9 +119,9 @@ const Profile = () => {
       {/* Sidebar */}
       <aside className="glass-card sidebar">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
-            <img src="/logo-icon.png" alt="Logo Icon" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
-            <h1 style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.5px' }}>MemoryVerse</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+            <img src="/logo.png" alt="MemoryVerse Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+            <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>MemoryVerse</h1>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button className="btn-outline active">
@@ -184,7 +165,7 @@ const Profile = () => {
         {/* Nút Tạo Hành trình */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h3 style={{ fontSize: '24px', fontWeight: 'bold' }}>Các Hành Trình Kỷ Niệm</h3>
-          <button onClick={() => { setAlbumTitle(''); setAlbumDesc(''); setAlbumCoverFile(null); setShowModal(true); }} className="btn-primary">
+          <button onClick={() => { setAlbumTitle(''); setAlbumDesc(''); setShowModal(true); }} className="btn-primary">
             + Bắt đầu hành trình mới
           </button>
         </div>
@@ -203,27 +184,26 @@ const Profile = () => {
               >
                 {/* Nút Sửa & Xóa góc phải */}
                 <div style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', gap: '4px', zIndex: 10 }}>
-                  <button title="Sửa tên & Ảnh bìa Album" onClick={(e) => handleEditClick(e, album)} style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}>
+                  <button onClick={(e) => handleEditClick(e, album)} style={{ background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                     ✏️
                   </button>
-                  <button title="Xóa Album" onClick={(e) => handleDeleteAlbum(e, album._id)} style={{ background: 'rgba(239,68,68,0.7)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}>
+                  <button onClick={(e) => handleDeleteAlbum(e, album._id)} style={{ background: 'rgba(239,68,68,0.5)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                     🗑️
                   </button>
                 </div>
 
-                <div className="album-cover" style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', background: 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                <div className="album-cover">
                   {album.coverImage ? (
                     <img 
                       src={`http://localhost:5001${album.coverImage}`} 
                       alt="Cover" 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       onError={(e) => {
                         e.target.style.display = 'none';
-                        e.target.parentNode.innerHTML = '<span style="opacity: 0.5; font-size: 36px;">📁</span>';
+                        e.target.parentNode.innerHTML = '<span style="opacity: 0.5; font-size: 32px;">📁</span>';
                       }}
                     />
                   ) : (
-                    <span style={{ opacity: 0.5, fontSize: '36px' }}>📁</span>
+                    <span style={{ opacity: 0.5, fontSize: '32px' }}>📁</span>
                   )}
                 </div>
                 <h3 style={{ fontWeight: '600', fontSize: '18px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{album.title}</h3>
@@ -237,70 +217,36 @@ const Profile = () => {
       {/* Modal Tạo / Sửa Album (Dùng chung layout) */}
       {(showModal || showEditModal) && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ width: '420px', padding: '28px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '20px' }}>
-              {showEditModal ? '✏️ Chỉnh sửa Hành trình' : '✨ Tạo Hành Trình Mới'}
+          <div className="modal-content">
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px' }}>
+              {showEditModal ? 'Chỉnh sửa Album' : 'Tạo Album Mới'}
             </h2>
             <form onSubmit={showEditModal ? handleUpdateAlbum : handleCreateAlbum}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Tên Hành trình</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Tên Album</label>
               <input 
                 type="text" 
                 value={albumTitle}
                 onChange={e => setAlbumTitle(e.target.value)}
                 className="form-input"
-                placeholder="Ví dụ: Hành trình Cuộc đời Chủ tịch Hồ Chí Minh"
+                placeholder="Ví dụ: Tết Nguyên Đán 2026"
                 required
-                style={{ padding: '10px 12px' }}
               />
               
-              <label style={{ display: 'block', marginBottom: '6px', marginTop: '12px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Mô tả (tùy chọn)</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Mô tả (tùy chọn)</label>
               <textarea 
                 value={albumDesc}
                 onChange={e => setAlbumDesc(e.target.value)}
                 className="form-input"
-                style={{ minHeight: '80px', resize: 'vertical', padding: '10px 12px' }}
-                placeholder="Ghi chú thêm về hành trình này..."
+                style={{ minHeight: '100px', resize: 'vertical' }}
+                placeholder="Ghi chú thêm về album này..."
               />
               
-              {/* Chọn Ảnh Bìa Cho Album */}
-              <label style={{ display: 'block', marginBottom: '6px', marginTop: '12px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                🖼️ Chọn Ảnh Bìa đại diện (Tùy chọn)
-              </label>
-              <input 
-                type="file" 
-                id="album-cover-input" 
-                accept="image/*" 
-                style={{ display: 'none' }}
-                onChange={e => setAlbumCoverFile(e.target.files[0])}
-              />
-              <label 
-                htmlFor="album-cover-input"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px',
-                  borderRadius: '10px',
-                  background: albumCoverFile ? 'rgba(59, 130, 246, 0.2)' : 'rgba(155, 119, 92, 0.15)',
-                  border: albumCoverFile ? '1.5px solid #3b82f6' : '1.5px dashed rgba(155, 119, 92, 0.4)',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px',
-                  color: albumCoverFile ? '#60a5fa' : 'var(--text-primary)',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {albumCoverFile ? `📁 Đã chọn: ${albumCoverFile.name}` : '📂 Bấm để chọn Ảnh bìa từ máy tính'}
-              </label>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
-                <button type="button" onClick={() => { setShowModal(false); setShowEditModal(false); }} className="btn-primary" style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+                <button type="button" onClick={() => { setShowModal(false); setShowEditModal(false); }} className="btn-primary" style={{ background: 'transparent', border: '1px solid var(--border-color)' }}>
                   Hủy
                 </button>
-                <button type="submit" disabled={processing} className="btn-primary" style={{ fontWeight: 'bold' }}>
-                  {processing ? '⏳ Đang lưu...' : '💾 Lưu lại'}
+                <button type="submit" disabled={processing} className="btn-primary">
+                  {processing ? 'Đang lưu...' : 'Lưu lại'}
                 </button>
               </div>
             </form>

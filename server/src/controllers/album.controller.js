@@ -5,14 +5,9 @@ const Memory = require('../models/memory.model');
 exports.createAlbum = async (req, res) => {
   try {
     const { title, description } = req.body;
-    let coverImage = '';
-    if (req.file) {
-      coverImage = `/uploads/${req.file.filename}`;
-    }
     const album = new Album({
       title,
       description,
-      coverImage,
       ownerId: req.user.userId
     });
     await album.save();
@@ -108,15 +103,10 @@ exports.updateAlbum = async (req, res) => {
   try {
     const { albumId } = req.params;
     const { title, description } = req.body;
-    const updateData = { title, description };
-
-    if (req.file) {
-      updateData.coverImage = `/uploads/${req.file.filename}`;
-    }
     
     const album = await Album.findOneAndUpdate(
       { _id: albumId, ownerId: req.user.userId },
-      updateData,
+      { title, description },
       { new: true }
     );
     

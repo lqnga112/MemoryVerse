@@ -540,7 +540,10 @@ const AlbumDetail = () => {
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(168, 139, 119, 0.2)', paddingTop: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
           <p>Hành trình lưu giữ bởi</p>
-          <p style={{ fontWeight: 'bold', color: 'var(--primary-brown)' }}>MemoryVerse</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <img src="/logo.png" alt="MemoryVerse Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+            <p style={{ fontWeight: 'bold', color: 'var(--primary-brown)' }}>MemoryVerse</p>
+          </div>
         </div>
       </aside>
 

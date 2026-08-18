@@ -30,7 +30,7 @@ const upload = multer({
 });
 
 // --- Album & Memory Routes ---
-router.post('/albums', authMiddleware, upload.single('coverImage'), albumController.createAlbum);
+router.post('/albums', authMiddleware, albumController.createAlbum);
 router.get('/albums', authMiddleware, albumController.getAlbums);
 router.get('/albums/:albumId/memories', authMiddleware, albumController.getMemories);
 router.post('/albums/:albumId/memories', authMiddleware, upload.single('file'), albumController.uploadMemory);
@@ -38,7 +38,7 @@ router.post('/albums/:albumId/memories', authMiddleware, upload.single('file'), 
 const aiController = require('../controllers/ai.controller');
 
 // --- Edit & Delete Routes ---
-router.put('/albums/:albumId', authMiddleware, upload.single('coverImage'), albumController.updateAlbum);
+router.put('/albums/:albumId', authMiddleware, albumController.updateAlbum);
 router.delete('/albums/:albumId', authMiddleware, albumController.deleteAlbum);
 router.put('/memories/:memoryId', authMiddleware, upload.single('file'), albumController.updateMemory);
 router.delete('/memories/:memoryId', authMiddleware, albumController.deleteMemory);

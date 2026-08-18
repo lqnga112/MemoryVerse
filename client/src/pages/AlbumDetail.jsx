@@ -954,6 +954,34 @@ const AlbumDetail = () => {
       {/* Lightbox / Edit Memory Modal */}
       {selectedMemory && (
         <div className="modal-overlay" style={{ padding: '40px', boxSizing: 'border-box' }}>
+          {/* Nút X Đóng / Tắt Kỷ niệm To Nổi Bật Góc Trên Bên Phải */}
+          <button 
+            onClick={() => { setSelectedMemory(null); if(isListening) recognitionRef.current.stop(); }}
+            style={{
+              position: 'absolute',
+              top: '24px',
+              right: '24px',
+              background: 'rgba(0, 0, 0, 0.8)',
+              color: '#ffffff',
+              border: '1.5px solid rgba(255, 255, 255, 0.4)',
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              zIndex: 1200,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+              transition: 'all 0.2s'
+            }}
+            title="Tắt / Đóng kỷ niệm (✖)"
+          >
+            ✖
+          </button>
+
           <div style={{ width: '100%', maxWidth: '1000px', height: '100%', display: 'flex', gap: '24px', position: 'relative' }}>
             
             {/* Vùng hiển thị Ảnh/Video to */}
@@ -993,11 +1021,11 @@ const AlbumDetail = () => {
               )}
             </div>
 
-            {/* Cột Công cụ bên phải */}
-            <div className="modal-content" style={{ width: '350px', height: 'max-content' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            {/* Cột Công cụ bên phải (Cấu hình cuộn dọc để không bị mất nút Lưu) */}
+            <div className="modal-content" style={{ width: '380px', maxHeight: '88vh', overflowY: 'auto', padding: '24px', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Kỷ niệm</h3>
-                <button onClick={() => { setSelectedMemory(null); if(isListening) recognitionRef.current.stop(); }} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✖</button>
+                <button onClick={() => { setSelectedMemory(null); if(isListening) recognitionRef.current.stop(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', fontSize: '18px', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✖</button>
               </div>
 
               <form onSubmit={handleUpdateMemory}>
@@ -1100,7 +1128,7 @@ const AlbumDetail = () => {
                   value={memoryExtractedText}
                   onChange={e => setMemoryExtractedText(e.target.value)}
                   className="form-input"
-                  style={{ minHeight: '110px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid rgba(155, 119, 92, 0.3)' }}
+                  style={{ minHeight: '90px', resize: 'vertical', border: isListening ? '1px solid #f87171' : '1px solid rgba(155, 119, 92, 0.3)' }}
                   placeholder="Nội dung trích xuất AI (OCR, STT) hoặc câu chuyện chi tiết..."
                 />
                 
@@ -1128,11 +1156,15 @@ const AlbumDetail = () => {
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                  <button type="submit" disabled={updatingMemory} className="btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
-                    {updatingMemory ? '⏳' : 'Lưu lại'}
+                {/* Bộ 3 Nút Hành Động: Lưu Lại / Đóng / Xóa */}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '16px', paddingBottom: '10px' }}>
+                  <button type="submit" disabled={updatingMemory} className="btn-primary" style={{ flex: 2, justifyContent: 'center', fontWeight: 'bold', padding: '10px 14px' }}>
+                    {updatingMemory ? '⏳ Đang lưu...' : '💾 Lưu lại'}
                   </button>
-                  <button type="button" onClick={handleDeleteMemory} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                  <button type="button" onClick={() => { setSelectedMemory(null); if(isListening) recognitionRef.current.stop(); }} className="btn-primary" style={{ flex: 1, justifyContent: 'center', background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px' }}>
+                    ✖ Đóng
+                  </button>
+                  <button type="button" onClick={handleDeleteMemory} className="btn-primary" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '10px 12px' }}>
                     🗑️ Xóa
                   </button>
                 </div>

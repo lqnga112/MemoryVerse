@@ -7,7 +7,7 @@ const Memory = require('./src/models/memory.model');
 async function seedData() {
   try {
     await mongoose.connect('mongodb://127.0.0.1:27017/family_memory_db');
-    console.log('✅ Đã kết nối CSDL MongoDB để nạp lại dữ liệu với tài khoản mới...');
+    console.log('✅ Đã kết nối CSDL MongoDB để nạp lại dữ liệu hình ảnh chuẩn nội dung...');
 
     // 1. Tạo mật khẩu mã hóa Bcrypt mới
     const adminPasswordHash = await bcrypt.hash('Admin@123', 10);
@@ -43,10 +43,10 @@ async function seedData() {
       title: 'Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)',
       description: 'Tuyển tập 10 mốc kỷ niệm đáng nhớ nhất trong cuộc đời từ thời niên thiếu, quân ngũ, lập nghiệp cho đến khi gia đình sum vầy.',
       ownerId: normalUser._id,
-      coverImage: '/uploads/1784825460232.jpg'
+      coverImage: '/uploads/memory_reunion_2026.jpg'
     });
 
-    // 3. Danh sách 10 Kỷ niệm đầy đủ cho Album Demo
+    // 3. Danh sách 10 Kỷ niệm chuẩn hình ảnh theo từng mốc nội dung
     const memoriesData = [
       {
         albumId: demoAlbum._id,
@@ -55,7 +55,7 @@ async function seedData() {
         memoryDate: new Date('1956-09-15'),
         location: 'Hà Nội',
         fileType: 'letter',
-        fileUrl: '/uploads/1784827594107.png',
+        fileUrl: '/uploads/memory_letter_1956.jpg',
         extractedText: 'Gửi thầy cô và cha mẹ kính yêu,\nCon vừa hoàn thành kỳ thi vào trường Bưởi (Hà Nội). Mùa thu Hà Nội năm nay lá vàng bay ngợp phố, con hứa sẽ học tập thật giỏi để không phụ lòng mong mỏi của gia đình.'
       },
       {
@@ -75,7 +75,7 @@ async function seedData() {
         memoryDate: new Date('1975-04-30'),
         location: 'TP. Hồ Chí Minh',
         fileType: 'image',
-        fileUrl: '/uploads/1784825460232.jpg',
+        fileUrl: '/uploads/memory_saigon_1975.jpg',
         extractedText: 'Khoảnh khắc lịch sử hòa bình độc lập thống nhất đất nước. Cả Sài Gòn rợp cờ hoa, nụ cười vỡ òa trên môi những người lính trở về.'
       },
       {
@@ -85,7 +85,7 @@ async function seedData() {
         memoryDate: new Date('1978-03-12'),
         location: 'Thừa Thiên Huế',
         fileType: 'image',
-        fileUrl: '/uploads/1784825857049.jpg',
+        fileUrl: '/uploads/memory_wedding_hue_1978.jpg',
         extractedText: 'Đám cưới giản dị thời bao cấp tại Huế với người bạn đời Lê Thị Mai. Chiếc xe đạp mây và áo dài truyền thống đong đầy hạnh phúc.'
       },
       {
@@ -95,7 +95,7 @@ async function seedData() {
         memoryDate: new Date('1985-05-18'),
         location: 'Quảng Nam',
         fileType: 'image',
-        fileUrl: '/uploads/1784826423584.jpg',
+        fileUrl: '/uploads/memory_baby_1985.jpg',
         extractedText: 'Bé Nguyễn Thu Hà cất tiếng khóc chào đời tại Quảng Nam. Niềm hạnh phúc lớn nhất của vợ chồng tôi khi trở thành cha mẹ.'
       },
       {
@@ -105,7 +105,7 @@ async function seedData() {
         memoryDate: new Date('1995-10-10'),
         location: 'Đà Nẵng',
         fileType: 'image',
-        fileUrl: '/uploads/1785757396618.jpg',
+        fileUrl: '/uploads/memory_carpentry_1995.jpg',
         extractedText: 'Bước ngoặt tự tay mở xưởng chế tác đồ gỗ mỹ nghệ tại Đà Nẵng, tạo công ăn việc làm cho các anh em cựu chiến binh.'
       },
       {
@@ -115,7 +115,7 @@ async function seedData() {
         memoryDate: new Date('2005-04-25'),
         location: 'Lâm Đồng',
         fileType: 'image',
-        fileUrl: '/uploads/1785757462489.jpg',
+        fileUrl: '/uploads/memory_dalat_2005.jpg',
         extractedText: 'Cả gia đình 3 thế hệ cùng nhau du lịch hồ Xuân Hương - Đà Lạt (Lâm Đồng) kỷ niệm mừng thọ 60 tuổi của ông An.'
       },
       {
@@ -135,7 +135,7 @@ async function seedData() {
         memoryDate: new Date('2020-02-14'),
         location: 'Lào Cai',
         fileType: 'image',
-        fileUrl: '/uploads/1785760150903.webp',
+        fileUrl: '/uploads/memory_sapa_2020.jpg',
         extractedText: 'Chuyến đi Sa Pa ngắm sương mù miền núi phía Bắc, gửi lại những câu chuyện truyền cảm hứng cho con cháu.'
       },
       {
@@ -145,13 +145,13 @@ async function seedData() {
         memoryDate: new Date('2026-08-15'),
         location: 'Hà Nội',
         fileType: 'image',
-        fileUrl: '/uploads/1786038508170.jpg',
+        fileUrl: '/uploads/memory_reunion_2026.jpg',
         extractedText: 'AI Gemini tổng hợp: "80 năm cuộc đời của ông Nguyễn Văn An là một thiên tiểu thuyết hoài niệm đẹp đẽ. Từ mái trường Bưởi Hà Nội, những năm tháng quân ngũ gian lao, cho đến tình yêu bền bỉ và mái ấm gia đình hạnh phúc 3 thế hệ ngày hôm nay."'
       }
     ];
 
     await Memory.insertMany(memoriesData);
-    console.log(`🎉 NẠP THÀNH CÔNG DỮ LIỆU VỚI TÀI KHOẢN MỚI CHUẨN!`);
+    console.log(`🎉 NẠP THÀNH CÔNG DỮ LIỆU HÌNH ẢNH CHUẨN NỘI DUNG!`);
     console.log(`📌 User Email: demo_user@memoryverse.com / Pass: User@123`);
     console.log(`📌 Admin Email: admin@memoryverse.com / Pass: Admin@123`);
   } catch (err) {

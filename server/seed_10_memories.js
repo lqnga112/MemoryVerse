@@ -32,14 +32,12 @@ async function seedData() {
       bio: 'Hành trình 80 năm hoài niệm cuộc đời'
     });
 
-    // 2. Tạo Album "Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)"
-    let demoAlbum = await Album.findOne({ title: 'Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)' });
-    if (demoAlbum) {
-      await Memory.deleteMany({ albumId: demoAlbum._id });
-      await Album.deleteOne({ _id: demoAlbum._id });
-    }
+    // Xóa toàn bộ Album cũ & Kỷ niệm cũ để cập nhật mới sạch sẽ
+    await Album.deleteMany({});
+    await Memory.deleteMany({});
 
-    demoAlbum = await Album.create({
+    // 2. Tạo Album "Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)"
+    const demoAlbum = await Album.create({
       title: 'Hành Trình 80 Năm Cuộc Đời - Ông Nguyễn Văn An (1946 - 2026)',
       description: 'Tuyển tập 10 mốc kỷ niệm đáng nhớ nhất trong cuộc đời từ thời niên thiếu, quân ngũ, lập nghiệp cho đến khi gia đình sum vầy.',
       ownerId: normalUser._id,
@@ -152,8 +150,7 @@ async function seedData() {
 
     await Memory.insertMany(memoriesData);
     console.log(`🎉 NẠP THÀNH CÔNG DỮ LIỆU HÌNH ẢNH CHUẨN NỘI DUNG!`);
-    console.log(`📌 User Email: demo_user@memoryverse.com / Pass: User@123`);
-    console.log(`📌 Admin Email: admin@memoryverse.com / Pass: Admin@123`);
+    console.log(`📌 Album ID mới: ${demoAlbum._id}`);
   } catch (err) {
     console.error('❌ Lỗi nạp dữ liệu demo:', err);
   } finally {
